@@ -2,6 +2,7 @@
 
 import { useCart } from "@/context/CartContext";
 import { Menu, Search, ShoppingCart, X } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -54,10 +55,17 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-8 lg:space-x-12">
             <Link
-              className="text-2xl tracking-tight text-gray-900 hover:text-gray-700 transition-colors"
+              className="flex items-center gap-2 text-2xl tracking-tight text-gray-900 hover:text-gray-700 transition-colors"
               href="/"
               aria-label="FabricNow Home"
             >
+              <Image
+                src="/images/brand/logo-icon.svg"
+                alt=""
+                width={24}
+                height={26}
+                priority
+              />
               FABRIC<span className="text-primary">NOW</span>
             </Link>
 

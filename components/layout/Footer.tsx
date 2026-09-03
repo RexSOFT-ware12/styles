@@ -11,6 +11,7 @@ import {
   Phone,
   Twitter,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "../ui/button";
@@ -113,10 +114,16 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
             <div className="lg:col-span-2">
               <Link
-                className="text-2xl tracking-tight text-gray-900 hover:text-gray-700 transition-colors"
+                className="flex items-center gap-2 text-2xl tracking-tight text-gray-900 hover:text-gray-700 transition-colors mb-4"
                 href="/"
                 aria-label="FabricNow Home"
               >
+                <Image
+                  src="/images/brand/logo-icon.svg"
+                  alt=""
+                  width={24}
+                  height={26}
+                />
                 FABRIC<span className="text-primary">NOW</span>
               </Link>
               <p className="text-muted-foreground mb-6 max-w-sm">
