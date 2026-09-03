@@ -10,11 +10,13 @@ import Link from "next/link";
 import { useState } from "react";
 
 interface Product {
-  id: number;
+  id: number | string;
   image: string;
   name: string;
   price: number;
   category?: string;
+  style?: string;
+  fabric?: string;
 }
 
 export default function ProductCard({ product }: { product: Product }) {
@@ -110,6 +112,21 @@ export default function ProductCard({ product }: { product: Product }) {
             {product.name}
           </h2>
         </Link>
+
+        {(product.style || product.fabric) && (
+          <div className="flex flex-wrap items-center gap-1.5">
+            {product.style && (
+              <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+                {product.style}
+              </span>
+            )}
+            {product.fabric && (
+              <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                {product.fabric}
+              </span>
+            )}
+          </div>
+        )}
 
         <div className="flex items-center gap-2">
           <span className="text-lg font-bold text-foreground">

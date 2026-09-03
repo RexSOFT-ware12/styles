@@ -1,7 +1,9 @@
-import products from "@/data/products.json";
+import { getProducts } from "@/lib/products";
 import ProductCard from "./ProductCard";
 
-export default function ProductList() {
+export default async function ProductList() {
+  const products = await getProducts({ sort: "newest" });
+
   return (
     <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto">
       {products.length > 0 ? (

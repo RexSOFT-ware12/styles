@@ -7,8 +7,9 @@ import RelatedProducts from "@/components/product/RelatedProducts";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/context/CartContext";
-import products from "@/data/products.json";
+import { getProductById } from "@/lib/products";
 import { cn } from "@/lib/utils";
+import type { Product } from "@/types/product";
 import {
   Check,
   Heart,
@@ -20,18 +21,38 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Product() {
   const { addToCart } = useCart();
   const { productId } = useParams();
   const router = useRouter();
+  const [product, setProduct] = useState<Product | null | undefined>(undefined);
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
 
-  const product = products.find((p) => p.id === parseInt(productId as string));
+  useEffect(() => {
+    let cancelled = false;
+    if (!productId) return;
+
+    getProductById(productId as string).then((result) => {
+      if (!cancelled) setProduct(result);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [productId]);
+
+  if (product === undefined) {
+    return (
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center text-muted-foreground">
+        Loading product…
+      </div>
+    );
+  }
 
   if (!product) {
     return <ProductNotFound />;
@@ -107,10 +128,48 @@ export default function Product() {
             </span>
           </div>
 
+          {(product.style || product.fabric || product.color) && (
+            <div className="flex flex-wrap items-center gap-2">
+              {product.style && (
+                <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+                  Style: {product.style}
+                </span>
+              )}
+              {product.fabric && (
+                <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-sm font-medium text-muted-foreground">
+                  Fabric: {product.fabric}
+                </span>
+              )}
+              {product.color && (
+                <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-sm font-medium text-muted-foreground">
+                  Color: {product.color}
+                </span>
+              )}
+            </div>
+          )}
+
           <div className="flex items-center gap-3">
             <span className="text-3xl font-bold text-foreground">
               ${product.price.toFixed(2)}
             </span>
+            {typeof product.stock === "number" && (
+              <span
+                className={cn(
+                  "text-sm font-medium",
+                  product.stock > 15
+                    ? "text-green-600"
+                    : product.stock > 0
+                    ? "text-amber-600"
+                    : "text-destructive"
+                )}
+              >
+                {product.stock > 15
+                  ? "In stock"
+                  : product.stock > 0
+                  ? `Only ${product.stock} left`
+                  : "Out of stock"}
+              </span>
+            )}
           </div>
 
           <p className="text-muted-foreground leading-relaxed">

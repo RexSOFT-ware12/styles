@@ -12,9 +12,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Bloom E-Commerce Template",
+  title: "FabricNow — Fashion & Style E-Commerce",
   description:
-    "Discover a wide selection of trendy clothes, shoes and accessories on Bloom E-Commerce. Enjoy fast delivery and free returns. Shop now!",
+    "Discover a wide selection of trendy clothes, shoes and accessories on FabricNow. Enjoy fast delivery and free returns. Shop now!",
 };
 
 export default function RootLayout({

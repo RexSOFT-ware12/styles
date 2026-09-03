@@ -55,7 +55,7 @@ export default function Contact() {
     {
       icon: Mail,
       title: "Email Us",
-      details: ["hello@bloomshop.com", "support@bloomshop.com"],
+      details: ["hello@fabricnow.com", "support@fabricnow.com"],
       description: "Send us an email anytime",
     },
     {
