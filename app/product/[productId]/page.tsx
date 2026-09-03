@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import type { Product } from "@/types/product";
 import {
   Check,
+  Download,
   Heart,
   Minus,
   Plus,
@@ -176,6 +177,23 @@ export default function Product() {
             {product.description}
           </p>
 
+          {product.hasDigitalFile && product.digitalFile && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 rounded-lg px-3 py-2 w-fit">
+              <Download className="h-4 w-4 text-primary" />
+              <span>
+                Includes {product.digitalFile.originalName}
+                {typeof product.digitalFile.size === "number" &&
+                  ` (${(product.digitalFile.size / (1024 * 1024)).toFixed(1)} MB)`}
+              </span>
+            </div>
+          )}
+
+          {!product.hasDigitalFile && (
+            <div className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 w-fit">
+              This product doesn&apos;t have a downloadable file attached yet — check back soon.
+            </div>
+          )}
+
           <Separator />
 
           <div className="space-y-4">
@@ -219,7 +237,7 @@ export default function Product() {
                     : "bg-primary text-primary-foreground hover:bg-primary/90"
                 )}
                 onClick={handleAddToCart}
-                disabled={isAdding}
+                disabled={isAdding || !product.hasDigitalFile}
               >
                 {isAdding ? (
                   <div className="flex items-center gap-2">
@@ -231,6 +249,8 @@ export default function Product() {
                     <Check className="h-4 w-4" />
                     Added to Cart!
                   </div>
+                ) : !product.hasDigitalFile ? (
+                  "Unavailable"
                 ) : (
                   <div className="flex items-center gap-2">
                     <ShoppingCart className="h-4 w-4" />
@@ -243,6 +263,7 @@ export default function Product() {
                 size="lg"
                 variant="outline"
                 onClick={handleBuyNow}
+                disabled={!product.hasDigitalFile}
                 className="flex-1"
               >
                 Buy Now

@@ -18,6 +18,9 @@ export interface Product {
   featured?: boolean;
   createdAt?: string;
   updatedAt?: string;
+  /** Whether a downloadable digital bundle (.zip with the .zprj + assets) is attached. */
+  hasDigitalFile?: boolean;
+  digitalFile?: { originalName: string; size: number } | null;
 }
 
 export interface ProductsResponse {

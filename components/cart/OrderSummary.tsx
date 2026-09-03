@@ -1,11 +1,10 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/context/CartContext";
-import { CreditCard, Heart, Shield, Truck } from "lucide-react";
+import { CreditCard, Download, Heart, Shield } from "lucide-react";
 import Link from "next/link";
 
 export default function OrderSummary() {
@@ -15,9 +14,8 @@ export default function OrderSummary() {
     (sum, item) => sum + item.price * item.quantity,
     0
   );
-  const shipping = subtotal > 50 ? 0 : 9.99;
   const tax = subtotal * 0.08;
-  const total = subtotal + shipping + tax;
+  const total = subtotal + tax;
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
@@ -36,19 +34,6 @@ export default function OrderSummary() {
           </div>
 
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Shipping</span>
-            <span className="font-medium">
-              {shipping === 0 ? (
-                <Badge variant="secondary" className="text-xs">
-                  Free
-                </Badge>
-              ) : (
-                `$${shipping.toFixed(2)}`
-              )}
-            </span>
-          </div>
-
-          <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Tax</span>
             <span className="font-medium">${tax.toFixed(2)}</span>
           </div>
@@ -63,19 +48,17 @@ export default function OrderSummary() {
           </div>
         </div>
 
-        {shipping > 0 && (
-          <div className="p-3 bg-accent/10 rounded-lg border border-accent/20">
-            <div className="flex items-center gap-2 mb-2">
-              <Truck className="h-4 w-4 text-accent-foreground" />
-              <span className="text-sm font-medium text-accent-foreground">
-                Free shipping on orders over $50
-              </span>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Add ${(50 - subtotal).toFixed(2)} more to qualify!
-            </p>
+        <div className="p-3 bg-accent/10 rounded-lg border border-accent/20">
+          <div className="flex items-center gap-2 mb-2">
+            <Download className="h-4 w-4 text-accent-foreground" />
+            <span className="text-sm font-medium text-accent-foreground">
+              Instant digital download
+            </span>
           </div>
-        )}
+          <p className="text-xs text-muted-foreground">
+            No shipping — your files unlock right after payment.
+          </p>
+        </div>
 
         <Button
           size="lg"
@@ -94,8 +77,8 @@ export default function OrderSummary() {
             <span>Secure SSL checkout</span>
           </div>
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
-            <Truck className="h-4 w-4 text-blue-500" />
-            <span>Free returns within 30 days</span>
+            <Download className="h-4 w-4 text-blue-500" />
+            <span>Re-download anytime from My Purchases</span>
           </div>
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
             <Heart className="h-4 w-4 text-red-500" />

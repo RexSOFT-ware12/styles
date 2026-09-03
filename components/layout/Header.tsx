@@ -1,7 +1,9 @@
 "use client";
 
+import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
-import { Menu, Search, ShoppingCart, X } from "lucide-react";
+import { Download, Menu, Search, ShoppingCart, X } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -9,6 +11,7 @@ import { Button } from "../ui/button";
 
 export default function Header() {
   const { cart } = useCart();
+  const { user, logout } = useAuth();
   const cartCount =
     cart?.reduce((total, item) => total + item.quantity, 0) || 0;
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -54,10 +57,17 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-8 lg:space-x-12">
             <Link
-              className="text-2xl tracking-tight text-gray-900 hover:text-gray-700 transition-colors"
+              className="flex items-center gap-2 text-2xl tracking-tight text-gray-900 hover:text-gray-700 transition-colors"
               href="/"
               aria-label="FabricNow Home"
             >
+              <Image
+                src="/images/brand/logo-icon.svg"
+                alt=""
+                width={24}
+                height={26}
+                priority
+              />
               FABRIC<span className="text-primary">NOW</span>
             </Link>
 
@@ -136,16 +146,32 @@ export default function Header() {
             </Link>
 
             <div className="hidden sm:flex items-center space-x-2">
-              <Link href="/">
-                <Button variant="ghost" size="sm" className="text-sm">
-                  Sign In
-                </Button>
-              </Link>
-              <Link href="/">
-                <Button size="sm" variant="default" className="text-sm">
-                  Sign Up
-                </Button>
-              </Link>
+              {user ? (
+                <>
+                  <Link href="/account/purchases">
+                    <Button variant="ghost" size="sm" className="text-sm">
+                      <Download className="h-4 w-4 mr-1.5" />
+                      My Purchases
+                    </Button>
+                  </Link>
+                  <Button size="sm" variant="outline" className="text-sm" onClick={logout}>
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link href="/signin">
+                    <Button variant="ghost" size="sm" className="text-sm">
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link href="/signup">
+                    <Button size="sm" variant="default" className="text-sm">
+                      Sign Up
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -192,16 +218,38 @@ export default function Header() {
             </div>
 
             <div className="flex flex-col space-y-3 pt-4 sm:hidden">
-              <Button variant="outline" className="w-full text-sm" asChild>
-                <Link href="/" onClick={closeMobileMenu}>
-                  Sign In
-                </Link>
-              </Button>
-              <Button className="w-full text-sm" variant="default" asChild>
-                <Link href="/" onClick={closeMobileMenu}>
-                  Sign Up
-                </Link>
-              </Button>
+              {user ? (
+                <>
+                  <Button variant="outline" className="w-full text-sm" asChild>
+                    <Link href="/account/purchases" onClick={closeMobileMenu}>
+                      My Purchases
+                    </Link>
+                  </Button>
+                  <Button
+                    className="w-full text-sm"
+                    variant="default"
+                    onClick={() => {
+                      logout();
+                      closeMobileMenu();
+                    }}
+                  >
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button variant="outline" className="w-full text-sm" asChild>
+                    <Link href="/signin" onClick={closeMobileMenu}>
+                      Sign In
+                    </Link>
+                  </Button>
+                  <Button className="w-full text-sm" variant="default" asChild>
+                    <Link href="/signup" onClick={closeMobileMenu}>
+                      Sign Up
+                    </Link>
+                  </Button>
+                </>
+              )}
             </div>
           </nav>
         )}
