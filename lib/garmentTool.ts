@@ -1,4 +1,11 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+// The garment tool now runs as its own standalone Cloud Run service (moved
+// off the main backend because @imgly/background-removal-node's native
+// onnxruntime threading was crashing under App Engine standard's gVisor
+// sandbox — see garment-service/README.md). It intentionally has its own
+// env var rather than reusing NEXT_PUBLIC_API_URL, since that one still
+// points at the main backend for everything else (auth/orders/products).
+const GARMENT_TOOL_API_BASE =
+  process.env.NEXT_PUBLIC_GARMENT_TOOL_API_URL || "http://localhost:8080/api";
 
 async function parseError(res: Response): Promise<string> {
   try {
@@ -18,7 +25,7 @@ export async function processGarmentFile(token: string, file: File): Promise<Blo
   const formData = new FormData();
   formData.append("file", file);
 
-  const res = await fetch(`${API_BASE}/garment-tool/process`, {
+  const res = await fetch(`${GARMENT_TOOL_API_BASE}/garment-tool/process`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
     body: formData,
