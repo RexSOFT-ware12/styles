@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getProducts } from "@/lib/products";
 import { Product } from "@/types/product";
+import { isSvgSrc } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -51,13 +52,21 @@ export default function RelatedProducts({ product }: RelatedProductsProps) {
           >
             <Link href={`/product/${relatedProduct.id}`}>
               <div className="aspect-square overflow-hidden bg-muted">
-                <Image
-                  src={relatedProduct.image}
-                  alt={relatedProduct.name}
-                  width={400}
-                  height={400}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
+                {isSvgSrc(relatedProduct.image) ? (
+                  <img
+                    src={relatedProduct.image}
+                    alt={relatedProduct.name}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 bg-white"
+                  />
+                ) : (
+                  <Image
+                    src={relatedProduct.image}
+                    alt={relatedProduct.name}
+                    width={400}
+                    height={400}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                )}
               </div>
               <CardContent className="p-4">
                 <h3 className="font-semibold text-foreground line-clamp-1 mb-2">

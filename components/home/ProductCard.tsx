@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
-import { cn } from "@/lib/utils";
+import { cn, isSvgSrc } from "@/lib/utils";
 import { Check, Eye, Heart, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -88,14 +88,25 @@ export default function ProductCard({ product }: { product: Product }) {
         <Link href={`/product/${product.id}`} className="block relative">
           <div className="aspect-square overflow-hidden bg-muted">
             {!imageError ? (
-              <Image
-                src={product.image}
-                alt={product.name}
-                width={400}
-                height={400}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                onError={() => setImageError(true)}
-              />
+              isSvgSrc(product.image) ? (
+                // Plain <img> for SVGs — bypasses next/image's optimizer
+                // entirely (see lib/utils.ts:isSvgSrc for why).
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 bg-white"
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  width={400}
+                  height={400}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  onError={() => setImageError(true)}
+                />
+              )
             ) : (
               <div className="w-full h-full bg-muted flex items-center justify-center">
                 <div className="text-muted-foreground text-xs text-center px-2">

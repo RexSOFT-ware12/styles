@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { cn, isSvgSrc } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -169,19 +169,31 @@ export default function ProductGallery({
           onTouchEnd={handleTouchEnd}
           onTouchCancel={handleTouchEnd}
         >
-          <Image
-            src={displayed.src}
-            alt={displayed.label ? `${name} — ${displayed.label}` : name}
-            fill
-            priority
-            fetchPriority="high"
-            sizes="(max-width: 500px) 100vw, 500px"
-            className={cn(
-              "rounded-xl transition-opacity duration-150",
-              isFilled(displayed.label) ? "object-cover" : "object-contain",
-              isSwitching && "opacity-60"
-            )}
-          />
+          {isSvgSrc(displayed.src) ? (
+            <img
+              src={displayed.src}
+              alt={displayed.label ? `${name} — ${displayed.label}` : name}
+              className={cn(
+                "absolute inset-0 w-full h-full rounded-xl transition-opacity duration-150 bg-white",
+                isFilled(displayed.label) ? "object-cover" : "object-contain",
+                isSwitching && "opacity-60"
+              )}
+            />
+          ) : (
+            <Image
+              src={displayed.src}
+              alt={displayed.label ? `${name} — ${displayed.label}` : name}
+              fill
+              priority
+              fetchPriority="high"
+              sizes="(max-width: 500px) 100vw, 500px"
+              className={cn(
+                "rounded-xl transition-opacity duration-150",
+                isFilled(displayed.label) ? "object-cover" : "object-contain",
+                isSwitching && "opacity-60"
+              )}
+            />
+          )}
           {isSwitching && (
             <div className="absolute inset-0 flex items-center justify-center bg-background/20">
               <Loader2 className="h-8 w-8 animate-spin text-primary" aria-label="Loading image" />
@@ -218,13 +230,24 @@ export default function ProductGallery({
                     : "border-border hover:border-primary/50"
                 )}
               >
-                <Image
-                  src={img.src}
-                  alt={img.label ? `${name} — ${img.label} thumbnail` : `${name} thumbnail`}
-                  fill
-                  sizes="64px"
-                  className={isThumbFilled(img.label) ? "object-cover" : "object-contain"}
-                />
+                {isSvgSrc(img.src) ? (
+                  <img
+                    src={img.src}
+                    alt={img.label ? `${name} — ${img.label} thumbnail` : `${name} thumbnail`}
+                    className={cn(
+                      "absolute inset-0 w-full h-full bg-white",
+                      isThumbFilled(img.label) ? "object-cover" : "object-contain"
+                    )}
+                  />
+                ) : (
+                  <Image
+                    src={img.src}
+                    alt={img.label ? `${name} — ${img.label} thumbnail` : `${name} thumbnail`}
+                    fill
+                    sizes="64px"
+                    className={isThumbFilled(img.label) ? "object-cover" : "object-contain"}
+                  />
+                )}
               </button>
             ))}
           </div>

@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/context/CartContext";
+import { isSvgSrc } from "@/lib/utils";
 import { Trash2 } from "lucide-react";
 import Image from "next/image";
 
@@ -23,13 +24,21 @@ export default function CartItem({ item, isLast }: CartItemProps) {
     <div>
       <div className="flex items-start gap-4">
         <div className="relative w-[100px] h-[100px]">
-          <Image
-            src={item.image}
-            alt={item.name}
-            fill
-            sizes="100px"
-            className="rounded-lg object-cover bg-muted"
-          />
+          {isSvgSrc(item.image) ? (
+            <img
+              src={item.image}
+              alt={item.name}
+              className="absolute inset-0 w-full h-full rounded-lg object-cover bg-white"
+            />
+          ) : (
+            <Image
+              src={item.image}
+              alt={item.name}
+              fill
+              sizes="100px"
+              className="rounded-lg object-cover bg-muted"
+            />
+          )}
         </div>
 
         <div className="flex-1 min-w-0">

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
+import { isSvgSrc } from "@/lib/utils";
 import { ArrowLeft, Heart, ShoppingCart, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -61,13 +62,21 @@ export default function WishlistPage() {
         {wishlist.map((item) => (
           <Card key={item.id} className="overflow-hidden">
             <Link href={`/product/${item.id}`} className="block relative aspect-square bg-muted">
-              <Image
-                src={item.image}
-                alt={item.name}
-                fill
-                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"
-                className="object-cover"
-              />
+              {isSvgSrc(item.image) ? (
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="absolute inset-0 w-full h-full object-cover bg-white"
+                />
+              ) : (
+                <Image
+                  src={item.image}
+                  alt={item.name}
+                  fill
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"
+                  className="object-cover"
+                />
+              )}
             </Link>
             <CardContent className="p-3 space-y-2">
               <Link href={`/product/${item.id}`}>
