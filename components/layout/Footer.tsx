@@ -33,37 +33,37 @@ export default function Footer() {
     {
       title: "Shop",
       links: [
-        { href: "/shop", label: "All Products" },
-        { href: "/shop", label: "New Arrivals" },
-        { href: "/shop", label: "Sale" },
-        { href: "/shop", label: "Featured" },
+        { href: "/", label: "All Products" },
+        { href: "/?sort=newest", label: "New Arrivals" },
+        { href: "/", label: "Sale" },
+        { href: "/", label: "Featured" },
       ],
     },
     {
       title: "Customer Care",
       links: [
         { href: "/contact", label: "Contact Us" },
-        { href: "/", label: "Help Center" },
-        { href: "/", label: "Shipping Info" },
-        { href: "/", label: "Returns & Exchanges" },
+        { href: "/help", label: "Help Center" },
+        { href: "/licensing", label: "Download & Licensing" },
+        { href: "/returns", label: "Returns & Exchanges" },
       ],
     },
     {
       title: "Company",
       links: [
         { href: "/about", label: "About Us" },
-        { href: "/", label: "Careers" },
-        { href: "/", label: "Blog" },
-        { href: "/", label: "Press" },
+        { href: "/careers", label: "Careers" },
+        { href: "/blog", label: "Blog" },
+        { href: "/press", label: "Press" },
       ],
     },
     {
       title: "Legal",
       links: [
-        { href: "/", label: "Privacy Policy" },
-        { href: "/", label: "Terms & Conditions" },
-        { href: "/", label: "Cookie Policy" },
-        { href: "/", label: "Accessibility" },
+        { href: "/privacy", label: "Privacy Policy" },
+        { href: "/terms", label: "Terms & Conditions" },
+        { href: "/cookies", label: "Cookie Policy" },
+        { href: "/accessibility", label: "Accessibility" },
       ],
     },
   ];
@@ -127,22 +127,29 @@ export default function Footer() {
                 FABRIC<span className="text-primary">NOW</span>
               </Link>
               <p className="text-muted-foreground mb-6 max-w-sm">
-                Discover unique products that inspire your lifestyle. Quality
-                craftsmanship meets modern design.
+                Studio-quality fabric assets and ready-to-use CLO3D garment
+                files, built by designers for designers.
               </p>
 
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <MapPin className="h-4 w-4 text-primary" />
-                  <span>123 Fashion Street, Style City, SC 12345</span>
+                  <a
+                    href="https://www.zillow.com/homedetails/3308-De-Reimer-Ave-Bronx-NY-10475/79723838_zpid/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-primary transition-colors"
+                  >
+                    3308 De Reimer Ave, Bronx, NY 10475
+                  </a>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <Phone className="h-4 w-4 text-primary" />
-                  <span>+1 (555) 123-4567</span>
+                  <span>+1 (201) 909-4567</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <Mail className="h-4 w-4 text-primary" />
-                  <span>hello@fabricnow.com</span>
+                  <span>info@fabricnow.com</span>
                 </div>
               </div>
 
@@ -198,7 +205,6 @@ export default function Footer() {
               <span>All Rights Reserved.</span>
               <br />
             </div>
-            <p className="text-sm text-muted-foreground">Developed by <a href="https://github.com/bloomtpl" target="_blank" rel="noopener noreferrer" className="font-bold hover:text-primary transition-colors">Bloomtpl</a> • Distributed by <a href="https://themewagon.com" target="_blank" rel="noopener noreferrer" className="font-bold hover:text-primary transition-colors">ThemeWagon</a></p>
           </div>
 
           <div className="flex items-center gap-6 text-sm">

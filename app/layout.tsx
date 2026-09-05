@@ -1,9 +1,13 @@
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
+import SiteChat from "@/components/layout/SiteChat";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
+import { SiteChatProvider } from "@/context/SiteChatContext";
+import { WishlistProvider } from "@/context/WishlistContext";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 
 const inter = Inter({
@@ -13,9 +17,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "FabricNow — Fashion & Style E-Commerce",
+  title: "FabricNow — CLO3D Fabric & Garment Files",
   description:
-    "Discover a wide selection of trendy clothes, shoes and accessories on FabricNow. Enjoy fast delivery and free returns. Shop now!",
+    "Studio-quality fabric assets and ready-to-use CLO3D garment files. Download a .zprj project, drop it in, and start designing in minutes.",
   icons: {
     icon: [
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
@@ -39,9 +43,16 @@ export default function RootLayout({
       >
         <AuthProvider>
           <CartProvider>
-            <Header />
-            <main className="flex-grow">{children}</main>
-            <Footer />
+            <WishlistProvider>
+              <SiteChatProvider>
+                <Suspense fallback={null}>
+                  <Header />
+                </Suspense>
+                <main className="flex-grow">{children}</main>
+                <Footer />
+                <SiteChat />
+              </SiteChatProvider>
+            </WishlistProvider>
           </CartProvider>
         </AuthProvider>
       </body>

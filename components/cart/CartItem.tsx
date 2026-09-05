@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/context/CartContext";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import Image from "next/image";
 
 interface CartItemProps {
@@ -12,13 +12,12 @@ interface CartItemProps {
     name: string;
     price: number;
     image: string;
-    quantity: number;
   };
   isLast: boolean;
 }
 
 export default function CartItem({ item, isLast }: CartItemProps) {
-  const { removeFromCart, updateQuantity } = useCart();
+  const { removeFromCart } = useCart();
 
   return (
     <div>
@@ -40,7 +39,7 @@ export default function CartItem({ item, isLast }: CartItemProps) {
                 {item.name}
               </h2>
               <p className="text-sm text-muted-foreground mt-1">
-                ${item.price.toFixed(2)} each
+                Digital download — unlimited redownloads for 20 days
               </p>
             </div>
 
@@ -54,35 +53,10 @@ export default function CartItem({ item, isLast }: CartItemProps) {
             </Button>
           </div>
 
-          <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center border border-border rounded-lg">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() =>
-                  updateQuantity(item.id, Math.max(1, item.quantity - 1))
-                }
-                disabled={item.quantity <= 1}
-                className="h-8 w-8 rounded-r-none"
-              >
-                <Minus className="h-3 w-3" />
-              </Button>
-              <span className="px-4 py-2 min-w-[50px] text-center text-sm font-medium">
-                {item.quantity}
-              </span>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                className="h-8 w-8 rounded-l-none"
-              >
-                <Plus className="h-3 w-3" />
-              </Button>
-            </div>
-
+          <div className="flex items-center justify-end mt-4">
             <div className="text-right">
               <p className="text-lg font-bold text-foreground">
-                ${(item.price * item.quantity).toFixed(2)}
+                ${item.price.toFixed(2)}
               </p>
             </div>
           </div>

@@ -4,19 +4,31 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
-import { downloadPurchase, getMyOrders, Order } from "@/lib/orders";
+import { downloadPurchase, getCachedOrders, getMyOrders, Order } from "@/lib/orders";
 import { Download, Loader2, PackageOpen } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function PurchasesPage() {
   const { user, token, loading: authLoading } = useAuth();
-  const [orders, setOrders] = useState<Order[] | null>(null);
+  // Seed from the in-memory cache so a repeat visit (e.g. navigating away
+  // and back to this page) paints the last-known list immediately instead
+  // of flashing the loading state again. The effect below still refetches
+  // to keep it current — this only affects the very first paint.
+  const [orders, setOrders] = useState<Order[] | null>(() =>
+    token ? getCachedOrders(token) : null
+  );
   const [error, setError] = useState<string | null>(null);
   const [downloadingKey, setDownloadingKey] = useState<string | null>(null);
 
   useEffect(() => {
     if (!token) return;
+    // If we already have cached orders for this token, show them right
+    // away and revalidate quietly; otherwise this is the first load and
+    // the spinner below is the real, unavoidable one.
+    const cached = getCachedOrders(token);
+    if (cached) setOrders(cached);
+
     getMyOrders(token)
       .then(setOrders)
       .catch((err) => setError(err instanceof Error ? err.message : "Couldn't load your purchases"));
@@ -96,7 +108,7 @@ export default function PurchasesPage() {
                     <div>
                       <p className="font-medium">{item.name}</p>
                       <p className="text-sm text-muted-foreground">
-                        Qty {item.quantity} · ${item.price.toFixed(2)} each
+                        ${item.price.toFixed(2)}
                       </p>
                     </div>
 

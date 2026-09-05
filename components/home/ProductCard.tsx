@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 import { cn } from "@/lib/utils";
 import { Check, Eye, Heart, ShoppingCart } from "lucide-react";
 import Image from "next/image";
@@ -17,19 +18,25 @@ interface Product {
   category?: string;
   style?: string;
   fabric?: string;
+  /** Mirrors the product detail page: no downloadable file means it can't
+   *  actually be checked out yet, so "Add to Cart" is disabled here too. */
+  hasDigitalFile?: boolean;
 }
 
 export default function ProductCard({ product }: { product: Product }) {
-  const [isLiked, setIsLiked] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
 
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const isLiked = isInWishlist(product.id);
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (!product.hasDigitalFile) return;
 
     setIsAdding(true);
 
@@ -40,7 +47,6 @@ export default function ProductCard({ product }: { product: Product }) {
       name: product.name,
       price: product.price,
       image: product.image,
-      quantity: 1,
     });
 
     setIsAdding(false);
@@ -52,7 +58,12 @@ export default function ProductCard({ product }: { product: Product }) {
   const handleToggleLike = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsLiked(!isLiked);
+    toggleWishlist({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+    });
   };
 
   return (
@@ -63,14 +74,14 @@ export default function ProductCard({ product }: { product: Product }) {
           size="icon"
           name="Like Button"
           className={cn(
-            "absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-all duration-200 bg-background/80 backdrop-blur-sm hover:bg-background",
+            "absolute top-2 right-2 z-10 h-8 w-8 opacity-0 group-hover:opacity-100 transition-all duration-200 bg-background/80 backdrop-blur-sm hover:bg-background",
             isLiked && "opacity-100 text-destructive"
           )}
           onClick={handleToggleLike}
         >
           <Heart
             name="Like Icon"
-            className={cn("h-4 w-4", isLiked && "fill-current")}
+            className={cn("h-3.5 w-3.5", isLiked && "fill-current")}
           />
         </Button>
 
@@ -87,54 +98,53 @@ export default function ProductCard({ product }: { product: Product }) {
               />
             ) : (
               <div className="w-full h-full bg-muted flex items-center justify-center">
-                <div className="text-muted-foreground text-sm">
+                <div className="text-muted-foreground text-xs text-center px-2">
                   Image not available
                 </div>
               </div>
             )}
           </div>
 
-          <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
+          <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:flex items-center justify-center gap-2">
             <Button
               size="sm"
               className="bg-primary text-primary-foreground hover:bg-primary/90"
             >
-              <Eye className="h-4 w-4 mr-2" />
+              <Eye className="h-3.5 w-3.5 mr-1.5" />
               Quick View
             </Button>
           </div>
         </Link>
       </div>
 
-      <CardContent className="p-4 space-y-3">
+      <CardContent className="p-3 space-y-2">
         <Link href={`/product/${product.id}`}>
-          <h2 className="font-semibold text-foreground line-clamp-2 hover:text-primary transition-colors">
+          <h2 className="text-sm font-semibold text-foreground line-clamp-1 hover:text-primary transition-colors">
             {product.name}
           </h2>
         </Link>
 
         {(product.style || product.fabric) && (
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1 min-h-0">
             {product.style && (
-              <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+              <span className="inline-flex items-center rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary truncate max-w-full">
                 {product.style}
               </span>
             )}
             {product.fabric && (
-              <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+              <span className="hidden sm:inline-flex items-center rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground truncate max-w-full">
                 {product.fabric}
               </span>
             )}
           </div>
         )}
 
-        <div className="flex items-center gap-2">
-          <span className="text-lg font-bold text-foreground">
-            ${product.price.toFixed(2)}
-          </span>
-        </div>
+        <span className="text-sm font-bold text-foreground block">
+          ${product.price.toFixed(2)}
+        </span>
 
         <Button
+          size="sm"
           className={cn(
             "w-full transition-all duration-300",
             justAdded
@@ -142,22 +152,24 @@ export default function ProductCard({ product }: { product: Product }) {
               : "bg-primary text-primary-foreground hover:bg-primary/90"
           )}
           onClick={handleAddToCart}
-          disabled={isAdding}
+          disabled={isAdding || !product.hasDigitalFile}
         >
           {isAdding ? (
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-              Adding...
+            <div className="flex items-center gap-1.5">
+              <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              <span className="hidden sm:inline">Adding...</span>
             </div>
           ) : justAdded ? (
-            <div className="flex items-center gap-2">
-              <Check className="h-4 w-4" />
-              Added to Cart!
+            <div className="flex items-center gap-1.5">
+              <Check className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Added!</span>
             </div>
+          ) : !product.hasDigitalFile ? (
+            <span className="text-xs sm:text-sm">Unavailable</span>
           ) : (
-            <div className="flex items-center gap-2">
-              <ShoppingCart className="h-4 w-4" />
-              Add to Cart
+            <div className="flex items-center gap-1.5">
+              <ShoppingCart className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Add to Cart</span>
             </div>
           )}
         </Button>

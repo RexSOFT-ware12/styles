@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
+import { useSiteChat } from "@/context/SiteChatContext";
 import {
   CheckCircle,
   Clock,
@@ -20,6 +21,7 @@ import {
 import { useState } from "react";
 
 export default function Contact() {
+  const { openChat } = useSiteChat();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -55,19 +57,19 @@ export default function Contact() {
     {
       icon: Mail,
       title: "Email Us",
-      details: ["hello@fabricnow.com", "support@fabricnow.com"],
+      details: ["info@fabricnow.com", "support@tonasel.com"],
       description: "Send us an email anytime",
     },
     {
       icon: Phone,
       title: "Call Us",
-      details: ["+1 (555) 123-4567", "+1 (555) 987-6543"],
+      details: ["+1 (201) 909-4567"],
       description: "Mon-Fri from 8am to 5pm",
     },
     {
       icon: MapPin,
       title: "Visit Us",
-      details: ["123 Fashion Street", "Style City, SC 12345"],
+      details: ["3308 De Reimer Ave", "Bronx, NY 10475"],
       description: "Come say hello at our office",
     },
     {
@@ -326,24 +328,24 @@ export default function Contact() {
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {[
               {
-                question: "What are your shipping policies?",
+                question: "How do I get my files after I pay?",
                 answer:
-                  "We offer free shipping on orders over $50. Standard shipping takes 3-5 business days.",
+                  "There's no shipping — your download unlocks instantly on the confirmation page and stays available from your account, so you can grab it again anytime.",
               },
               {
-                question: "How can I track my order?",
+                question: "What's inside the download?",
                 answer:
-                  "Once your order ships, you'll receive a tracking number via email to monitor your package.",
+                  "A single .zip containing the CLO3D .zprj project file plus its fabric, pattern, and texture assets — open it straight in CLO3D, no extra setup.",
               },
               {
-                question: "What is your return policy?",
+                question: "What is your refund policy?",
                 answer:
-                  "We accept returns within 30 days of purchase. Items must be in original condition.",
+                  "Since each purchase unlocks a digital file immediately, we don't offer refunds once a download has started. Reach out if something's wrong with a file and we'll sort it out.",
               },
               {
-                question: "Do you offer international shipping?",
+                question: "Do you sell to customers outside the US?",
                 answer:
-                  "Yes, we ship worldwide. International shipping rates vary by destination.",
+                  "Yes — everything is delivered as a digital download, so there's nothing to ship and no international restrictions.",
               },
             ].map((faq, index) => (
               <Card key={index} className="hover:shadow-md transition-shadow">
@@ -380,8 +382,8 @@ export default function Contact() {
                   Call Us Now
                 </Button>
 
-                <Button size="lg" variant="outline">
-                  <Mail className="h-4 w-4 mr-2" />
+                <Button size="lg" variant="outline" onClick={openChat}>
+                  <MessageSquare className="h-4 w-4 mr-2" />
                   Live Chat
                 </Button>
               </div>

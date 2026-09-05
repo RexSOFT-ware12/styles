@@ -1,11 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { RotateCcw, Shield, Truck } from "lucide-react";
+import { Download, FileCheck, RefreshCcw } from "lucide-react";
 
 export default function Features() {
   const features = [
-    { icon: Truck, title: "Free Shipping", desc: "On orders over $50" },
-    { icon: Shield, title: "Warranty", desc: "1 year guarantee" },
-    { icon: RotateCcw, title: "Easy Returns", desc: "30-day return policy" },
+    { icon: Download, title: "Instant Download", desc: "Files unlock right after payment" },
+    { icon: FileCheck, title: "CLO3D Ready", desc: "Comes as a ready-to-open .zprj file" },
+    { icon: RefreshCcw, title: "Free Re-downloads", desc: "Get your files again anytime from your account" },
   ];
   return (
     <Card className="mb-16">

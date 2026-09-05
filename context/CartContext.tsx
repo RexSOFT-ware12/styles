@@ -7,7 +7,6 @@ interface CartItem {
   name: string;
   price: number;
   image: string;
-  quantity: number;
 }
 
 interface CartContextProps {
@@ -15,38 +14,41 @@ interface CartContextProps {
   addToCart: (item: CartItem) => void;
   removeFromCart: (id: number | string) => void;
   clearCart: () => void;
-  updateQuantity: (id: number | string, quantity: number) => void;
 }
 
 const CartContext = createContext<CartContextProps | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     const savedCart = localStorage.getItem("cart");
     if (savedCart) {
-      setCart(JSON.parse(savedCart));
+      try {
+        setCart(JSON.parse(savedCart));
+      } catch {
+        // Corrupted or incompatible-shape value (e.g. manually edited, or
+        // left over from an older version of the app) — start fresh rather
+        // than letting JSON.parse throw and break the whole app.
+        setCart([]);
+      }
     }
+    setHydrated(true);
   }, []);
 
   useEffect(() => {
+    if (!hydrated) return; // avoid clobbering saved data before it's loaded
     localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
+  }, [cart, hydrated]);
 
+  // Each product is a unique digital download — no point "buying" the same
+  // one twice, so adding it again while it's already in the cart is a no-op.
   const addToCart = (item: CartItem) => {
     setCart((prevCart) => {
-      const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
-
-      if (existingItem) {
-        return prevCart.map((cartItem) =>
-          cartItem.id === item.id
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
-        );
-      }
-
-      return [...prevCart, { ...item, quantity: 1 }];
+      const alreadyInCart = prevCart.some((cartItem) => cartItem.id === item.id);
+      if (alreadyInCart) return prevCart;
+      return [...prevCart, item];
     });
   };
 
@@ -59,17 +61,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem("cart");
   };
 
-  const updateQuantity = (id: number | string, quantity: number) => {
-    setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
-      )
-    );
-  };
-
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, clearCart, updateQuantity }}
+      value={{ cart, addToCart, removeFromCart, clearCart }}
     >
       {children}
     </CartContext.Provider>

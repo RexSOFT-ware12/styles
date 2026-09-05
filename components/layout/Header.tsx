@@ -2,23 +2,36 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
-import { Download, Menu, Search, ShoppingCart, X } from "lucide-react";
+import { useWishlist } from "@/context/WishlistContext";
+import { Download, Heart, Menu, Search, ShoppingCart, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "../ui/button";
 
 export default function Header() {
   const { cart } = useCart();
+  const { wishlist } = useWishlist();
   const { user, logout } = useAuth();
-  const cartCount =
-    cart?.reduce((total, item) => total + item.quantity, 0) || 0;
+  const cartCount = cart?.length || 0;
+  const wishlistCount = wishlist?.length || 0;
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  // Reflect the current ?search= value so the box stays in sync when the
+  // user is already on a filtered/searched listing (e.g. after using the
+  // filter bar, or navigating back).
+  const [searchQuery, setSearchQuery] = useState(
+    pathname === "/" ? searchParams.get("search") ?? "" : ""
+  );
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  useEffect(() => {
+    setSearchQuery(pathname === "/" ? searchParams.get("search") ?? "" : "");
+  }, [pathname, searchParams]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,6 +57,27 @@ export default function Header() {
   const isActivePath = (path: string) => pathname === path;
 
   const navItems = [{ href: "/contact", label: "Contact" }];
+
+  // Wires the (previously decorative) search inputs to the backend's
+  // ?search= param on the listing page. If we're already on "/", the
+  // existing filters/sort in the URL are preserved and only ?search= (and
+  // ?page=, since results change) are touched.
+  const handleSearchSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const query = searchQuery.trim();
+      const params = new URLSearchParams(
+        pathname === "/" ? searchParams.toString() : ""
+      );
+      if (query) params.set("search", query);
+      else params.delete("search");
+      params.delete("page");
+
+      router.push(`/${params.toString() ? `?${params.toString()}` : ""}`);
+      setIsSearchOpen(false);
+    },
+    [pathname, router, searchParams, searchQuery]
+  );
 
   return (
     <header
@@ -94,7 +128,7 @@ export default function Header() {
           </div>
 
           <div className="hidden lg:flex flex-1 max-w-md mx-8">
-            <form className="relative w-full">
+            <form className="relative w-full" onSubmit={handleSearchSubmit} role="search">
               <input
                 type="search"
                 placeholder="Search products..."
@@ -128,6 +162,22 @@ export default function Header() {
                 <Menu className="h-6 w-6 text-gray-700" />
               )}
             </button>
+
+            <Link
+              href="/wishlist"
+              className="relative p-2 rounded-full hover:bg-gray-100 transition-all duration-200 group"
+              aria-label={`Wishlist with ${wishlistCount} items`}
+            >
+              <Heart className="h-6 w-6 text-gray-700 group-hover:text-gray-900 transition-colors" />
+              {wishlistCount > 0 && (
+                <span
+                  className="absolute -top-1 -right-1 bg-primary text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1"
+                  aria-label={`${wishlistCount} items in wishlist`}
+                >
+                  {wishlistCount > 99 ? "99+" : wishlistCount}
+                </span>
+              )}
+            </Link>
 
             <Link
               href="/cart"
@@ -178,7 +228,7 @@ export default function Header() {
 
         {isSearchOpen && (
           <div className="lg:hidden mt-4 animate-in slide-in-from-top duration-200">
-            <form className="relative">
+            <form className="relative" onSubmit={handleSearchSubmit} role="search">
               <input
                 type="search"
                 placeholder="Search products..."

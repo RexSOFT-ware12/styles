@@ -18,6 +18,8 @@
     "next": "^16.0.9",
     "react": "^19.2.2",
     "react-dom": "^19.2.2",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7"
   },
@@ -27,6 +29,7 @@
     "@types/node": "^25.0.0",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "baseline-browser-mapping": "^2.11.20",
     "eslint": "^9.39.1",
     "eslint-config-next": "15.2.1",
     "tailwindcss": "^4.1.18",

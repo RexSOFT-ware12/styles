@@ -8,23 +8,22 @@ import { useCart } from "@/context/CartContext";
 import { createCheckoutSession } from "@/lib/orders";
 import { CreditCard, Download, Lock, ShieldCheck } from "lucide-react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const { cart } = useCart();
   const { user, token, loading: authLoading } = useAuth();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const canceled = searchParams.get("canceled");
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
   const tax = subtotal * 0.08;
   const total = subtotal + tax;
-  const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const itemCount = cart.length;
 
   if (!authLoading && !user) {
     return (
@@ -58,7 +57,7 @@ export default function CheckoutPage() {
     try {
       const { url } = await createCheckoutSession(
         token,
-        cart.map((item) => ({ productId: item.id, quantity: item.quantity }))
+        cart.map((item) => ({ productId: item.id }))
       );
       window.location.href = url;
     } catch (err) {
@@ -88,10 +87,8 @@ export default function CheckoutPage() {
           <div className="space-y-3">
             {cart.map((item) => (
               <div key={item.id} className="flex justify-between text-sm">
-                <span>
-                  {item.name} × {item.quantity}
-                </span>
-                <span className="font-medium">${(item.price * item.quantity).toFixed(2)}</span>
+                <span>{item.name}</span>
+                <span className="font-medium">${item.price.toFixed(2)}</span>
               </div>
             ))}
 
@@ -138,5 +135,13 @@ export default function CheckoutPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense>
+      <CheckoutContent />
+    </Suspense>
   );
 }

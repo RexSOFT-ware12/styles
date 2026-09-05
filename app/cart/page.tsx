@@ -11,7 +11,7 @@ import Link from "next/link";
 
 export default function Cart() {
   const { cart } = useCart();
-  const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const itemCount = cart.length;
 
   if (cart.length === 0) {
     return <EmptyCart />;
