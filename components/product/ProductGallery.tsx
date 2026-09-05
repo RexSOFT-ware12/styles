@@ -1,8 +1,8 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { cn, isSvgSrc } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
+import { cn, isSvgSrc, makeSvgResponsive, recolorPatternSvg } from "@/lib/utils";
+import { Check, Loader2, Palette } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -12,6 +12,24 @@ interface GalleryImage {
 }
 
 const AUTOPLAY_INTERVAL_MS = 3500;
+
+// Preset colorways offered for a traced Design Pattern's single flat fill
+// color (see style-backend/src/lib/svgConvert.js + lib/utils.ts's
+// recolorPatternSvg). `value: null` means "show the pattern's original
+// color" rather than overriding it.
+const PATTERN_COLORS: { label: string; value: string | null }[] = [
+  { label: "Original", value: null },
+  { label: "Charcoal", value: "#1f2937" },
+  { label: "Crimson", value: "#b91c1c" },
+  { label: "Rust", value: "#c2410c" },
+  { label: "Amber", value: "#b45309" },
+  { label: "Olive", value: "#4d7c0f" },
+  { label: "Forest", value: "#166534" },
+  { label: "Teal", value: "#0f766e" },
+  { label: "Navy", value: "#1e3a8a" },
+  { label: "Violet", value: "#6d28d9" },
+  { label: "Plum", value: "#9d174d" },
+];
 
 export default function ProductGallery({
   name,
@@ -131,6 +149,43 @@ export default function ProductGallery({
     setAutoplayStopped(true);
   };
 
+  // --- Design Pattern recoloring -------------------------------------
+  // For a traced Design Pattern SVG (see isSvgSrc), fetch its raw markup so
+  // it can be shown inline (dangerouslySetInnerHTML) rather than as an
+  // opaque <img> — inline is what lets the swatch picker below actually
+  // retint it, since every shape in the trace shares one flat fill color
+  // (see recolorPatternSvg's doc comment for why that's safe to swap).
+  const [patternMarkup, setPatternMarkup] = useState<string | null>(null);
+  const [patternColor, setPatternColor] = useState<string | null>(null);
+
+  useEffect(() => {
+    setPatternColor(null); // reset to "Original" whenever the shown image changes
+    if (!isSvgSrc(displayed.src)) {
+      setPatternMarkup(null);
+      return;
+    }
+    let cancelled = false;
+    fetch(displayed.src)
+      .then((res) => (res.ok ? res.text() : Promise.reject(new Error(`HTTP ${res.status}`))))
+      .then((text) => {
+        if (!cancelled) setPatternMarkup(text);
+      })
+      .catch(() => {
+        // Fall back to the plain <img> render below — still shows the
+        // pattern, just without the color picker.
+        if (!cancelled) setPatternMarkup(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [displayed.src]);
+
+  const recoloredMarkup = useMemo(
+    () => (patternMarkup ? makeSvgResponsive(recolorPatternSvg(patternMarkup, patternColor)) : null),
+    [patternMarkup, patternColor]
+  );
+
+
   // Only the fabric close-up is meant to fill its frame edge-to-edge
   // (object-cover) — it's meant to be a texture swatch, so cropping to fill
   // is normally fine. But some "Fabric Close-up" uploads are actually
@@ -170,15 +225,32 @@ export default function ProductGallery({
           onTouchCancel={handleTouchEnd}
         >
           {isSvgSrc(displayed.src) ? (
-            <img
-              src={displayed.src}
-              alt={displayed.label ? `${name} — ${displayed.label}` : name}
-              className={cn(
-                "absolute inset-0 w-full h-full rounded-xl transition-opacity duration-150 bg-white",
-                isFilled(displayed.label) ? "object-cover" : "object-contain",
-                isSwitching && "opacity-60"
-              )}
-            />
+            recoloredMarkup ? (
+              // Inline markup (not an <img>) — required for the color
+              // swatches below to actually retint this on selection.
+              <div
+                role="img"
+                aria-label={displayed.label ? `${name} — ${displayed.label}` : name}
+                className={cn(
+                  "absolute inset-0 w-full h-full rounded-xl transition-opacity duration-150 bg-white flex items-center justify-center p-6",
+                  isSwitching && "opacity-60"
+                )}
+                dangerouslySetInnerHTML={{ __html: recoloredMarkup }}
+              />
+            ) : (
+              // Still fetching the raw SVG (or the fetch failed) — show the
+              // plain image so the pattern is visible either way, just
+              // without the recolor picker until/unless the fetch succeeds.
+              <img
+                src={displayed.src}
+                alt={displayed.label ? `${name} — ${displayed.label}` : name}
+                className={cn(
+                  "absolute inset-0 w-full h-full rounded-xl transition-opacity duration-150 bg-white",
+                  isFilled(displayed.label) ? "object-cover" : "object-contain",
+                  isSwitching && "opacity-60"
+                )}
+              />
+            )
           ) : (
             <Image
               src={displayed.src}
@@ -250,6 +322,69 @@ export default function ProductGallery({
                 )}
               </button>
             ))}
+          </div>
+        )}
+
+        {recoloredMarkup && (
+          <div className="w-full mt-1">
+            <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mb-2">
+              <Palette className="h-3.5 w-3.5" />
+              Pattern Color
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              {PATTERN_COLORS.map(({ label, value }) => {
+                const isSelected = patternColor === value;
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => setPatternColor(value)}
+                    aria-label={label}
+                    aria-current={isSelected}
+                    title={label}
+                    className={cn(
+                      "relative h-8 w-8 shrink-0 rounded-full border transition-transform hover:scale-110",
+                      isSelected ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : "border-border"
+                    )}
+                    style={
+                      value
+                        ? { backgroundColor: value }
+                        : {
+                            background:
+                              "repeating-conic-gradient(#e5e7eb 0% 25%, #ffffff 0% 50%) 50% / 10px 10px",
+                          }
+                    }
+                  >
+                    {isSelected && (
+                      <Check
+                        className={cn(
+                          "absolute inset-0 m-auto h-4 w-4",
+                          value ? "text-white mix-blend-difference" : "text-foreground"
+                        )}
+                      />
+                    )}
+                  </button>
+                );
+              })}
+
+              {/* Custom color — native picker, styled to match the preset swatches */}
+              <label
+                title="Custom color"
+                className="relative h-8 w-8 shrink-0 rounded-full border border-border overflow-hidden cursor-pointer transition-transform hover:scale-110"
+                style={{
+                  background:
+                    "conic-gradient(red, yellow, lime, cyan, blue, magenta, red)",
+                }}
+              >
+                <input
+                  type="color"
+                  aria-label="Custom pattern color"
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                  value={patternColor || "#000000"}
+                  onChange={(e) => setPatternColor(e.target.value)}
+                />
+              </label>
+            </div>
           </div>
         )}
       </div>
