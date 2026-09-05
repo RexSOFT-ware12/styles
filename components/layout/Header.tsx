@@ -56,7 +56,10 @@ export default function Header() {
 
   const isActivePath = (path: string) => pathname === path;
 
-  const navItems = [{ href: "/contact", label: "Contact" }];
+  const navItems = [
+    { href: "/design-patterns", label: "Design Patterns" },
+    { href: "/contact", label: "Contact" },
+  ];
 
   // Wires the (previously decorative) search inputs to the backend's
   // ?search= param on the listing page. If we're already on "/", the

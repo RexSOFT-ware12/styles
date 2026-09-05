@@ -34,6 +34,17 @@ function backendImagePatterns() {
 
 const nextConfig: NextConfig = {
   images: {
+    // Design Pattern products are served as SVGs (auto-traced from the
+    // admin's PNG upload — see style-backend/src/lib/svgConvert.js). Next's
+    // image optimizer refuses to process SVGs by default (they can embed
+    // <script>), so this must be explicitly opted into. Our SVGs are
+    // produced server-side by our own trusted backend from an admin upload,
+    // not user-submitted markup rendered as-is, so this is safe here. The
+    // CSP still sandboxes anything served through the optimizer as a
+    // defense-in-depth measure.
+    dangerouslyAllowSVG: true,
+    contentDispositionType: "attachment",
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
       {
         protocol: "https",

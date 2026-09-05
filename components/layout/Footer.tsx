@@ -34,6 +34,7 @@ export default function Footer() {
       title: "Shop",
       links: [
         { href: "/", label: "All Products" },
+        { href: "/design-patterns", label: "Design Patterns" },
         { href: "/?sort=newest", label: "New Arrivals" },
         { href: "/", label: "Sale" },
         { href: "/", label: "Featured" },
