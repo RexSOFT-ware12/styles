@@ -47,3 +47,27 @@ export async function fetchMe(token: string): Promise<{ user: AuthUser }> {
   if (!res.ok) throw new Error(await parseError(res));
   return res.json();
 }
+
+/** Updates the signed-in user's profile (currently just display name). */
+export async function updateProfile(token: string, updates: { name: string }): Promise<{ user: AuthUser }> {
+  const res = await fetch(`${API_BASE}/auth/me`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify(updates),
+  });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
+}
+
+/** Changes the signed-in user's password (requires the current one). */
+export async function changePassword(
+  token: string,
+  payload: { currentPassword: string; newPassword: string }
+): Promise<void> {
+  const res = await fetch(`${API_BASE}/auth/change-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(await parseError(res));
+}

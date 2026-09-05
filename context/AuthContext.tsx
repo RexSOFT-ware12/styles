@@ -10,6 +10,10 @@ interface AuthContextProps {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
+  // Re-fetches /auth/me and updates the cached user — call after an
+  // account-details edit (e.g. name change) so the header/account pages
+  // reflect it without requiring a full sign-out/sign-in.
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -58,8 +62,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(null);
   };
 
+  const refreshUser = async () => {
+    if (!token) return;
+    const { user } = await fetchMe(token);
+    setUser(user);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

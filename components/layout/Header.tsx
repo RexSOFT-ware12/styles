@@ -3,7 +3,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
-import { Download, Heart, Menu, Search, ShoppingCart, X } from "lucide-react";
+import { Heart, Menu, Search, ShoppingCart, User, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -201,10 +201,10 @@ export default function Header() {
             <div className="hidden sm:flex items-center space-x-2">
               {user ? (
                 <>
-                  <Link href="/account/purchases">
+                  <Link href="/account">
                     <Button variant="ghost" size="sm" className="text-sm">
-                      <Download className="h-4 w-4 mr-1.5" />
-                      My Purchases
+                      <User className="h-4 w-4 mr-1.5" />
+                      My Account
                     </Button>
                   </Link>
                   <Button size="sm" variant="outline" className="text-sm" onClick={logout}>
@@ -274,8 +274,8 @@ export default function Header() {
               {user ? (
                 <>
                   <Button variant="outline" className="w-full text-sm" asChild>
-                    <Link href="/account/purchases" onClick={closeMobileMenu}>
-                      My Purchases
+                    <Link href="/account" onClick={closeMobileMenu}>
+                      My Account
                     </Link>
                   </Button>
                   <Button
