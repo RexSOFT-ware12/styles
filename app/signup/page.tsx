@@ -28,7 +28,9 @@ function SignUpContent() {
     setLoading(true);
     try {
       await register(name, email, password);
-      router.push(redirectTo);
+      // Signup always creates a fresh account — send every new user through
+      // onboarding, carrying the original destination along for afterward.
+      router.push(`/welcome?redirect=${encodeURIComponent(redirectTo)}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign up failed");
     } finally {
@@ -45,7 +47,11 @@ function SignUpContent() {
         <CardContent>
           <GoogleSignInButton
             text="signup_with"
-            onSuccess={() => router.push(redirectTo)}
+            onSuccess={(isNewUser) =>
+              router.push(
+                isNewUser ? `/welcome?redirect=${encodeURIComponent(redirectTo)}` : redirectTo
+              )
+            }
             onError={(message) => setError(message)}
           />
 

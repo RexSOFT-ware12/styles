@@ -9,6 +9,9 @@ export interface AuthUser {
 interface AuthResponse {
   token: string;
   user: AuthUser;
+  /** True only when this call just created the account (first signup, or
+   *  first-ever Google sign-in) — used to route straight to /welcome. */
+  isNewUser?: boolean;
 }
 
 async function parseError(res: Response): Promise<string> {

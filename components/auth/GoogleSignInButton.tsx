@@ -44,7 +44,7 @@ export function GoogleSignInButton({
   onError,
   text = "continue_with",
 }: {
-  onSuccess: () => void;
+  onSuccess: (isNewUser: boolean) => void;
   onError: (message: string) => void;
   text?: "signin_with" | "signup_with" | "continue_with";
 }) {
@@ -56,8 +56,8 @@ export function GoogleSignInButton({
   const handleCredential = useCallback(
     async (response: GoogleIdCredentialResponse) => {
       try {
-        await loginWithGoogle(response.credential);
-        onSuccess();
+        const { isNewUser } = await loginWithGoogle(response.credential);
+        onSuccess(isNewUser);
       } catch (err) {
         onError(err instanceof Error ? err.message : "Google sign-in failed");
       }

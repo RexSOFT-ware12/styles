@@ -44,7 +44,11 @@ function SignInContent() {
         <CardContent>
           <GoogleSignInButton
             text="signin_with"
-            onSuccess={() => router.push(redirectTo)}
+            onSuccess={(isNewUser) =>
+              router.push(
+                isNewUser ? `/welcome?redirect=${encodeURIComponent(redirectTo)}` : redirectTo
+              )
+            }
             onError={(message) => setError(message)}
           />
 

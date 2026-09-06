@@ -8,10 +8,13 @@ interface AuthContextProps {
   token: string | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  // Returns whether this call just created the account, so callers (the
+  // signup page) know to route to /welcome instead of straight in.
+  register: (name: string, email: string, password: string) => Promise<{ isNewUser: boolean }>;
   // Signs in (or, on first use, silently signs up) with a Google Identity
   // Services ID token. Same underlying call either way — see lib/auth.ts.
-  loginWithGoogle: (credential: string) => Promise<void>;
+  // Also returns isNewUser for the same reason as register() above.
+  loginWithGoogle: (credential: string) => Promise<{ isNewUser: boolean }>;
   logout: () => void;
   // Re-fetches /auth/me and updates the cached user — call after an
   // account-details edit (e.g. name change) so the header/account pages
@@ -53,17 +56,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const register = async (name: string, email: string, password: string) => {
-    const { token, user } = await apiSignup(name, email, password);
+    const { token, user, isNewUser } = await apiSignup(name, email, password);
     localStorage.setItem(STORAGE_KEY, token);
     setToken(token);
     setUser(user);
+    return { isNewUser: isNewUser ?? true };
   };
 
   const loginWithGoogle = async (credential: string) => {
-    const { token, user } = await apiGoogleAuth(credential);
+    const { token, user, isNewUser } = await apiGoogleAuth(credential);
     localStorage.setItem(STORAGE_KEY, token);
     setToken(token);
     setUser(user);
+    return { isNewUser: isNewUser ?? false };
   };
 
   const logout = () => {
