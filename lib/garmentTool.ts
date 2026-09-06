@@ -35,6 +35,51 @@ export async function processGarmentFile(token: string, file: File): Promise<Blo
   return res.blob();
 }
 
+/**
+ * Same as processGarmentFile, but reports real upload progress via
+ * XMLHttpRequest (the fetch API has no upload-progress event). Used to
+ * drive the accurate first stage of the garment tool page's progress UI.
+ */
+export function processGarmentFileWithProgress(
+  token: string,
+  file: File,
+  onUploadProgress: (percent: number) => void
+): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `${GARMENT_TOOL_API_BASE}/garment-tool/process`);
+    xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+    xhr.responseType = "blob";
+
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) {
+        onUploadProgress(Math.round((e.loaded / e.total) * 100));
+      }
+    };
+
+    xhr.onload = async () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(xhr.response as Blob);
+        return;
+      }
+      try {
+        const text = await (xhr.response as Blob).text();
+        const json = JSON.parse(text);
+        reject(new Error(json.error || `Request failed with ${xhr.status}`));
+      } catch {
+        reject(new Error(`Request failed with ${xhr.status}`));
+      }
+    };
+
+    xhr.onerror = () => reject(new Error("Network error — check your connection and try again."));
+
+    xhr.send(formData);
+  });
+}
+
 /** Triggers a browser download of the given blob under `filename`. */
 export function downloadBlob(blob: Blob, filename: string) {
   const url = window.URL.createObjectURL(blob);
