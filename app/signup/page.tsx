@@ -1,8 +1,10 @@
 "use client";
 
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -39,6 +41,18 @@ export default function SignUpPage() {
           <CardTitle className="text-2xl">Create an account</CardTitle>
         </CardHeader>
         <CardContent>
+          <GoogleSignInButton
+            text="signup_with"
+            onSuccess={() => router.push("/")}
+            onError={(message) => setError(message)}
+          />
+
+          <div className="flex items-center gap-3 my-6">
+            <Separator className="flex-1" />
+            <span className="text-xs text-muted-foreground">OR</span>
+            <Separator className="flex-1" />
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1">
               <label htmlFor="name" className="text-sm font-medium">

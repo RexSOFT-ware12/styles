@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthUser, fetchMe, signin as apiSignin, signup as apiSignup } from "@/lib/auth";
+import { AuthUser, fetchMe, googleAuth as apiGoogleAuth, signin as apiSignin, signup as apiSignup } from "@/lib/auth";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface AuthContextProps {
@@ -9,6 +9,9 @@ interface AuthContextProps {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
+  // Signs in (or, on first use, silently signs up) with a Google Identity
+  // Services ID token. Same underlying call either way — see lib/auth.ts.
+  loginWithGoogle: (credential: string) => Promise<void>;
   logout: () => void;
   // Re-fetches /auth/me and updates the cached user — call after an
   // account-details edit (e.g. name change) so the header/account pages
@@ -56,6 +59,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(user);
   };
 
+  const loginWithGoogle = async (credential: string) => {
+    const { token, user } = await apiGoogleAuth(credential);
+    localStorage.setItem(STORAGE_KEY, token);
+    setToken(token);
+    setUser(user);
+  };
+
   const logout = () => {
     localStorage.removeItem(STORAGE_KEY);
     setToken(null);
@@ -69,7 +79,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, loginWithGoogle, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

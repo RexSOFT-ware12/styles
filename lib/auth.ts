@@ -40,6 +40,22 @@ export async function signin(email: string, password: string): Promise<AuthRespo
   return res.json();
 }
 
+/**
+ * Exchanges a Google Identity Services ID token (NOT an access token) for a
+ * FabricNow session. Same endpoint handles both "sign in" and "sign up" —
+ * the backend creates the account on first use, since there's no separate
+ * password step to distinguish the two.
+ */
+export async function googleAuth(credential: string): Promise<AuthResponse> {
+  const res = await fetch(`${API_BASE}/auth/google`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ credential }),
+  });
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
+}
+
 export async function fetchMe(token: string): Promise<{ user: AuthUser }> {
   const res = await fetch(`${API_BASE}/auth/me`, {
     headers: { Authorization: `Bearer ${token}` },
