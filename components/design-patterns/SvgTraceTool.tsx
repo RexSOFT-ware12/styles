@@ -3,19 +3,26 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { UpgradeGate } from "@/components/account/UpgradeGate";
+import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
+import { useEntitlement } from "@/lib/useEntitlement";
 import { downloadSvg, traceImageToSvgWithProgress } from "@/lib/svgPreview";
+import { customizeSvg, SvgCustomizeOptions, UpgradeRequiredError } from "@/lib/svgCustomize";
 import {
   AlertCircle,
   CheckCircle2,
   Download,
+  Loader2,
   RotateCcw,
   ScanLine,
+  Sliders,
   Sparkles,
   UploadCloud,
   Wand2,
   X,
 } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 type Status = "idle" | "processing" | "success" | "error";
@@ -29,6 +36,15 @@ const STAGES = [
 
 const ACCEPTED_HINT = ".png, .jpg, or .webp";
 const MAX_LABEL_CHARS = 34;
+
+const DEFAULT_CUSTOM_OPTIONS: SvgCustomizeOptions = {
+  steps: 5,
+  threshold: 200,
+  turdSize: 2,
+  optTolerance: 0.3,
+  color: "#000000",
+  background: "transparent",
+};
 
 function isAcceptedFile(file: File) {
   return /image\/(png|jpe?g|webp)/.test(file.type);
@@ -60,6 +76,9 @@ function truncateName(name: string) {
  * processed" moments on the site feel like one consistent, polished product.
  */
 export default function SvgTraceTool() {
+  const { user, token } = useAuth();
+  const { entitlement, loading: entitlementLoading } = useEntitlement(token);
+
   const [status, setStatus] = useState<Status>("idle");
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -68,6 +87,14 @@ export default function SvgTraceTool() {
   const [uploadPercent, setUploadPercent] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [svg, setSvg] = useState<string | null>(null);
+
+  // --- Premium SVG customization (gated: 3-day trial, then $19.99/mo) ---
+  const [showCustomize, setShowCustomize] = useState(false);
+  const [customOptions, setCustomOptions] = useState<SvgCustomizeOptions>(DEFAULT_CUSTOM_OPTIONS);
+  const [customizing, setCustomizing] = useState(false);
+  const [customError, setCustomError] = useState<string | null>(null);
+  const [needsUpgrade, setNeedsUpgrade] = useState(false);
+  const [customSvg, setCustomSvg] = useState<string | null>(null);
 
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
@@ -123,6 +150,11 @@ export default function SvgTraceTool() {
     setError(null);
     setStageIndex(0);
     setUploadPercent(0);
+    setShowCustomize(false);
+    setCustomSvg(null);
+    setCustomError(null);
+    setNeedsUpgrade(false);
+    setCustomOptions(DEFAULT_CUSTOM_OPTIONS);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -159,6 +191,25 @@ export default function SvgTraceTool() {
       clearTimers();
       setError(err instanceof Error ? err.message : "Something went wrong.");
       setStatus("error");
+    }
+  }
+
+  async function handleCustomize() {
+    if (!file || !token) return;
+    setCustomizing(true);
+    setCustomError(null);
+    setNeedsUpgrade(false);
+    try {
+      const result = await customizeSvg(token, file, customOptions);
+      setCustomSvg(result.svg);
+    } catch (err) {
+      if (err instanceof UpgradeRequiredError) {
+        setNeedsUpgrade(true);
+      } else {
+        setCustomError(err instanceof Error ? err.message : "Something went wrong.");
+      }
+    } finally {
+      setCustomizing(false);
     }
   }
 
@@ -204,6 +255,144 @@ export default function SvgTraceTool() {
                     <Button onClick={reset}>
                       <RotateCcw className="h-4 w-4 mr-1.5" /> Trace another
                     </Button>
+                  </div>
+
+                  <div className="mt-6 w-full border-t pt-5">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="gap-1.5 text-muted-foreground"
+                      onClick={() => setShowCustomize((v) => !v)}
+                    >
+                      <Sliders className="h-3.5 w-3.5" />
+                      {showCustomize ? "Hide customization" : "Customize this trace"}
+                      <Badge variant="secondary" className="ml-1 gap-1 text-[10px]">
+                        <Sparkles className="h-2.5 w-2.5" /> Premium
+                      </Badge>
+                    </Button>
+
+                    {showCustomize && (
+                      <div className="mt-4 text-left">
+                        {!user ? (
+                          <div className="rounded-lg border border-dashed p-4 text-center">
+                            <p className="text-sm text-muted-foreground mb-3">
+                              Sign in to fine-tune the trace — detail level, colors, and background.
+                            </p>
+                            <Button asChild size="sm">
+                              <Link href="/signin?redirect=/design-patterns">Sign in</Link>
+                            </Button>
+                          </div>
+                        ) : entitlementLoading ? (
+                          <div className="flex justify-center py-4">
+                            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                          </div>
+                        ) : needsUpgrade || (entitlement && !entitlement.hasAccess) ? (
+                          <UpgradeGate featureName="SVG customization" />
+                        ) : (
+                          <div className="space-y-4 rounded-lg border p-4">
+                            {entitlement?.trialActive && entitlement.plan === "free" && (
+                              <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2.5 py-1.5">
+                                {entitlement.trialDaysLeft} day{entitlement.trialDaysLeft === 1 ? "" : "s"} left
+                                in your free trial.
+                              </p>
+                            )}
+
+                            <div className="grid grid-cols-2 gap-4">
+                              <label className="text-xs font-medium text-muted-foreground">
+                                Detail level ({customOptions.steps})
+                                <input
+                                  type="range"
+                                  min={1}
+                                  max={16}
+                                  value={customOptions.steps}
+                                  onChange={(e) =>
+                                    setCustomOptions((o) => ({ ...o, steps: Number(e.target.value) }))
+                                  }
+                                  className="mt-1.5 w-full accent-primary"
+                                />
+                              </label>
+                              <label className="text-xs font-medium text-muted-foreground">
+                                Threshold ({customOptions.threshold})
+                                <input
+                                  type="range"
+                                  min={0}
+                                  max={255}
+                                  value={customOptions.threshold}
+                                  onChange={(e) =>
+                                    setCustomOptions((o) => ({ ...o, threshold: Number(e.target.value) }))
+                                  }
+                                  className="mt-1.5 w-full accent-primary"
+                                />
+                              </label>
+                              <label className="text-xs font-medium text-muted-foreground">
+                                Fill color
+                                <input
+                                  type="color"
+                                  value={customOptions.color}
+                                  onChange={(e) => setCustomOptions((o) => ({ ...o, color: e.target.value }))}
+                                  className="mt-1.5 h-8 w-full rounded-md border cursor-pointer"
+                                />
+                              </label>
+                              <label className="text-xs font-medium text-muted-foreground">
+                                Background
+                                <select
+                                  value={customOptions.background === "transparent" ? "transparent" : "white"}
+                                  onChange={(e) =>
+                                    setCustomOptions((o) => ({
+                                      ...o,
+                                      background: e.target.value === "transparent" ? "transparent" : "#ffffff",
+                                    }))
+                                  }
+                                  className="mt-1.5 w-full rounded-md border px-2 py-1.5 text-sm"
+                                >
+                                  <option value="transparent">Transparent</option>
+                                  <option value="white">White</option>
+                                </select>
+                              </label>
+                            </div>
+
+                            {customError && (
+                              <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3">
+                                <AlertCircle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
+                                <p className="text-sm text-destructive">{customError}</p>
+                              </div>
+                            )}
+
+                            <div className="flex flex-wrap gap-2">
+                              <Button size="sm" onClick={handleCustomize} disabled={customizing}>
+                                {customizing ? (
+                                  <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+                                ) : (
+                                  <Wand2 className="h-4 w-4 mr-1.5" />
+                                )}
+                                Apply customization
+                              </Button>
+                              {customSvg && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() =>
+                                    downloadSvg(
+                                      customSvg,
+                                      `${(file?.name || "pattern").replace(/\.[^.]+$/, "")}-custom.svg`
+                                    )
+                                  }
+                                >
+                                  <Download className="h-4 w-4 mr-1.5" /> Download custom SVG
+                                </Button>
+                              )}
+                            </div>
+
+                            {customSvg && (
+                              <div
+                                className="mt-2 aspect-square w-full max-w-[200px] rounded-lg border bg-white p-3 [&_svg]:h-full [&_svg]:w-full"
+                                dangerouslySetInnerHTML={{ __html: customSvg }}
+                              />
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : status === "processing" ? (

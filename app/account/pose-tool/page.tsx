@@ -3,8 +3,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PoseTurntable } from "@/components/account/PoseTurntable";
+import { TrialBanner, UpgradeGate } from "@/components/account/UpgradeGate";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
+import { useEntitlement } from "@/lib/useEntitlement";
 import {
   type PoseResult,
   downloadBlob,
@@ -55,6 +57,7 @@ function truncateName(name: string) {
 
 export default function PoseToolPage() {
   const { user, token, loading: authLoading } = useAuth();
+  const { entitlement, loading: entitlementLoading } = useEntitlement(token);
 
   const [status, setStatus] = useState<Status>("idle");
   const [file, setFile] = useState<File | null>(null);
@@ -98,6 +101,15 @@ export default function PoseToolPage() {
         <Button asChild className="mt-4">
           <Link href="/signin?redirect=/account/pose-tool">Sign in</Link>
         </Button>
+      </div>
+    );
+  }
+
+  if (!entitlementLoading && entitlement && !entitlement.hasAccess) {
+    return (
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-2xl">
+        <h1 className="text-primary text-3xl font-semibold tracking-tight mb-6">Pose Tool</h1>
+        <UpgradeGate featureName="The Pose Tool" />
       </div>
     );
   }
@@ -175,6 +187,9 @@ export default function PoseToolPage() {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-2xl">
       <h1 className="text-primary text-3xl font-semibold tracking-tight mb-2">Pose Tool</h1>
+      {entitlement?.trialActive && entitlement.plan === "free" && (
+        <TrialBanner daysLeft={entitlement.trialDaysLeft} />
+      )}
       <p className="text-muted-foreground mb-8 max-w-lg">
         Upload a reference photo and Gemini reads the pose, then generates a neutral front/side/back
         mannequin turnaround plus notes written for CLO3D&apos;s Avatar Pose editor — a fast starting

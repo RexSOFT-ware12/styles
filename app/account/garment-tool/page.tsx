@@ -3,8 +3,10 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TrialBanner, UpgradeGate } from "@/components/account/UpgradeGate";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
+import { useEntitlement } from "@/lib/useEntitlement";
 import { downloadBlob, processGarmentFileWithProgress } from "@/lib/garmentTool";
 import {
   AlertCircle,
@@ -52,6 +54,7 @@ function truncateName(name: string) {
 
 export default function GarmentToolPage() {
   const { user, token, loading: authLoading } = useAuth();
+  const { entitlement, loading: entitlementLoading } = useEntitlement(token);
 
   const [status, setStatus] = useState<Status>("idle");
   const [file, setFile] = useState<File | null>(null);
@@ -96,6 +99,15 @@ export default function GarmentToolPage() {
         <Button asChild className="mt-4">
           <Link href="/signin?redirect=/account/garment-tool">Sign in</Link>
         </Button>
+      </div>
+    );
+  }
+
+  if (!entitlementLoading && entitlement && !entitlement.hasAccess) {
+    return (
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-2xl">
+        <h1 className="text-primary text-3xl font-semibold tracking-tight mb-6">Garment Tool</h1>
+        <UpgradeGate featureName="The Garment Tool" />
       </div>
     );
   }
@@ -170,6 +182,9 @@ export default function GarmentToolPage() {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-2xl">
       <h1 className="text-primary text-3xl font-semibold tracking-tight mb-2">Garment Tool</h1>
+      {entitlement?.trialActive && entitlement.plan === "free" && (
+        <TrialBanner daysLeft={entitlement.trialDaysLeft} />
+      )}
       <p className="text-muted-foreground mb-8 max-w-lg">
         Upload a design .psd (or a plain photo) and get back a background-removed image plus a
         rough first-pass vector outline for each detected garment part — a head start, not a
