@@ -2,14 +2,10 @@
 
 import {
   ArrowRight,
-  Facebook,
-  Github,
   Heart,
-  Instagram,
   Mail,
   MapPin,
   Phone,
-  Twitter,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -67,13 +63,6 @@ export default function Footer() {
         { href: "/accessibility", label: "Accessibility" },
       ],
     },
-  ];
-
-  const socialLinks = [
-    { href: "#", icon: Facebook, label: "Facebook" },
-    { href: "#", icon: Twitter, label: "Twitter" },
-    { href: "#", icon: Instagram, label: "Instagram" },
-    { href: "#", icon: Github, label: "GitHub" },
   ];
 
   return (
@@ -152,22 +141,6 @@ export default function Footer() {
                   <Mail className="h-4 w-4 text-primary" />
                   <span>info@fabricnow.com</span>
                 </div>
-              </div>
-
-              <div className="flex gap-3 mt-6">
-                {socialLinks.map(({ href, icon: Icon, label }) => (
-                  <Button
-                    key={label}
-                    variant="ghost"
-                    size="icon"
-                    asChild
-                    className="h-10 w-10 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"
-                  >
-                    <Link href={href} aria-label={label}>
-                      <Icon className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                ))}
               </div>
             </div>
 

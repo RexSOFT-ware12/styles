@@ -1,3 +1,4 @@
+import CookieConsentBanner from "@/components/layout/CookieConsentBanner";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import PremiumTrialBanner from "@/components/layout/PremiumTrialBanner";
@@ -53,6 +54,7 @@ export default function RootLayout({
                 <main className="flex-grow">{children}</main>
                 <Footer />
                 <SiteChat />
+                <CookieConsentBanner />
               </SiteChatProvider>
             </WishlistProvider>
           </CartProvider>
