@@ -9,11 +9,12 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "../ui/button";
+import { Skeleton } from "../ui/skeleton";
 
 export default function Header() {
   const { cart } = useCart();
   const { wishlist } = useWishlist();
-  const { user, logout } = useAuth();
+  const { user, logout, loading: authLoading } = useAuth();
   const cartCount = cart?.length || 0;
   const wishlistCount = wishlist?.length || 0;
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -203,7 +204,19 @@ export default function Header() {
             </Link>
 
             <div className="hidden sm:flex items-center space-x-2">
-              {user ? (
+              {authLoading ? (
+                // Same footprint as the signed-in buttons below, so nothing
+                // jumps once the real state resolves a moment later — this
+                // is what was flashing "Sign In / Sign Up" before settling
+                // on "My Account / Sign Out" (or vice versa) on every
+                // refresh: /auth/me hasn't answered yet on first render, so
+                // `user` briefly reads as null even when there IS a valid
+                // saved session.
+                <>
+                  <Skeleton className="h-8 w-24 rounded-md" />
+                  <Skeleton className="h-8 w-20 rounded-md" />
+                </>
+              ) : user ? (
                 <>
                   <Link href="/account">
                     <Button variant="ghost" size="sm" className="text-sm">
@@ -275,7 +288,12 @@ export default function Header() {
             </div>
 
             <div className="flex flex-col space-y-3 pt-4 sm:hidden">
-              {user ? (
+              {authLoading ? (
+                <>
+                  <Skeleton className="h-9 w-full rounded-md" />
+                  <Skeleton className="h-9 w-full rounded-md" />
+                </>
+              ) : user ? (
                 <>
                   <Button variant="outline" className="w-full text-sm" asChild>
                     <Link href="/account" onClick={closeMobileMenu}>
