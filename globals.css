@@ -201,3 +201,24 @@
     transform: translateY(0);
   }
 }
+
+/* Used by the Design Patterns page's live PNG -> SVG tracer (see
+   components/design-patterns/SvgTraceTool.tsx) for its idle hero graphic:
+   a dashed outline that continuously draws itself, echoing what potrace
+   actually does to an uploaded image. */
+@keyframes trace-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* A soft light sweep across the dropzone border to invite a drop/click,
+   same "beautiful but subtle" idle-state treatment as the tracing dashes. */
+@keyframes shimmer-sweep {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}

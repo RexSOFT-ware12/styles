@@ -1,4 +1,5 @@
 import ProductList from "@/components/home/ProductList";
+import SvgTraceTool from "@/components/design-patterns/SvgTraceTool";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -38,6 +39,7 @@ export default async function DesignPatternsPage({
           other digital product.
         </p>
       </div>
+      <SvgTraceTool />
       <ProductList searchParams={forcedSearchParams} />
     </div>
   );

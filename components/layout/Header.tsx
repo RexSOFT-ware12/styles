@@ -56,6 +56,9 @@ export default function Header() {
 
   const isActivePath = (path: string) => pathname === path;
 
+  // "Design Patterns" leads the nav — it's the site's headline interactive
+  // feature (the live PNG -> SVG tracer), so it gets first billing over the
+  // static pages next to it.
   const navItems = [
     { href: "/design-patterns", label: "Design Patterns" },
     { href: "/contact", label: "Contact" },
