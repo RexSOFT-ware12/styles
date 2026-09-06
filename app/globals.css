@@ -169,3 +169,49 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Shared entrance/utility keyframes used by dashboard tool pages
+   (Garment Tool, Pose Tool) via motion-safe:animate-[name_...] utilities. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Marching-dashes progress bar fill, used by the Garment Tool's stitch
+   progress track. Pattern repeat is 7px, so travel exactly one repeat. */
+@keyframes stitch-run {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 14px 0;
+  }
+}
+
+/* Small side-to-side nudge hinting "drag me" on the Pose Tool's turntable. */
+@keyframes drag-hint {
+  0%,
+  100% {
+    transform: translateX(-3px);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+}
