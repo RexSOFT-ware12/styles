@@ -200,7 +200,7 @@ export default function PoseToolPage() {
               </div>
               <h2 className="text-lg font-semibold mb-4">Pose read</h2>
 
-              <PoseTurntable images={result.images} />
+              <PoseTurntable images={result.images} warnings={result.imageWarnings} />
 
               <div className="mt-6 w-full space-y-4 text-left">
                 <div>

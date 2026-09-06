@@ -14,7 +14,13 @@ const LABELS: Record<PoseAngle, string> = { front: "Front", side: "Side", back: 
 // it can't deliver.
 const DRAG_STEP_PX = 90;
 
-export function PoseTurntable({ images }: { images: Record<PoseAngle, string | null> }) {
+export function PoseTurntable({
+  images,
+  warnings,
+}: {
+  images: Record<PoseAngle, string | null>;
+  warnings?: Partial<Record<PoseAngle, string | null>>;
+}) {
   const [index, setIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const dragStartX = useRef(0);
@@ -44,10 +50,11 @@ export function PoseTurntable({ images }: { images: Record<PoseAngle, string | n
   }
 
   if (!hasAnyImage) {
+    const anyWarning = warnings && ORDER.map((a) => warnings[a]).find(Boolean);
     return (
       <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-10 text-center text-sm text-muted-foreground">
         <Move3D className="h-6 w-6" />
-        No reference images were generated for this pose.
+        {anyWarning || "No reference images were generated for this pose."}
       </div>
     );
   }
@@ -77,7 +84,8 @@ export function PoseTurntable({ images }: { images: Record<PoseAngle, string | n
           />
         ) : (
           <p className="px-6 text-center text-xs text-muted-foreground">
-            The {LABELS[angle].toLowerCase()} view couldn&apos;t be generated for this pose.
+            {(warnings && warnings[angle]) ||
+              `The ${LABELS[angle].toLowerCase()} view couldn't be generated for this pose.`}
           </p>
         )}
 

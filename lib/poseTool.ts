@@ -27,6 +27,7 @@ export type PoseAngle = "front" | "side" | "back";
 export type PoseResult = {
   pose: PoseNotes;
   images: Record<PoseAngle, string | null>; // data: URLs, or null if that angle failed to generate
+  imageWarnings?: Partial<Record<PoseAngle, string | null>>; // why an angle is null, when known
   zipBase64: string;
 };
 
