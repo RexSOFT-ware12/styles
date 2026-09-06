@@ -65,6 +65,15 @@ export function GoogleSignInButton({
     [loginWithGoogle, onSuccess, onError]
   );
 
+  // If the Google script was already loaded by a previous page (e.g. the
+  // person navigated client-side from /signin to /signup), Next.js's
+  // <Script> component dedupes by src and won't re-fire onLoad here — so
+  // without this check, scriptReady would stay false forever and the
+  // button would just never render on whichever auth page loads second.
+  useEffect(() => {
+    if (window.google?.accounts?.id) setScriptReady(true);
+  }, []);
+
   useEffect(() => {
     if (!scriptReady || !clientId || !buttonHostRef.current) return;
     const accountsId = window.google?.accounts?.id;
