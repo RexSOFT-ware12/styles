@@ -1,6 +1,8 @@
 // Freemium gating for the Garment Tool, Pose Tool, and SVG customization:
-// 3 free days from signup, then $19.99/mo premium. Talks to the main
-// FabricNow backend's /api/billing/* routes (src/routes/billing.js).
+// 3 free days from signup, then premium ($29.99/mo for new subscribers;
+// existing subscribers may be grandfathered at a lower price — see
+// EntitlementStatus below). Talks to the main FabricNow backend's
+// /api/billing/* routes (src/routes/billing.js).
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
 export interface EntitlementStatus {
@@ -10,6 +12,17 @@ export interface EntitlementStatus {
   trialActive: boolean;
   trialEndsAt: string;
   trialDaysLeft: number;
+  /** Today's list price for a brand-new subscriber, e.g. 29.99. */
+  currentPremiumPriceUsd: number;
+  /**
+   * What THIS account is actually billed, e.g. 19.99 for someone
+   * grandfathered in before the price rose. Null if unknown (never
+   * subscribed, or subscribed before we started caching it — see
+   * style-backend's scripts/backfill-premium-price.js).
+   */
+  premiumPriceUsd: number | null;
+  /** True if premiumPriceUsd is below currentPremiumPriceUsd. */
+  isGrandfathered: boolean;
 }
 
 async function parseError(res: Response): Promise<string> {
@@ -29,7 +42,7 @@ export async function fetchEntitlement(token: string): Promise<EntitlementStatus
   return res.json();
 }
 
-/** Kicks off Stripe Checkout for the $19.99/mo premium plan and redirects there. */
+/** Kicks off Stripe Checkout for the premium plan and redirects there. */
 export async function startPremiumCheckout(token: string): Promise<void> {
   const res = await fetch(`${API_BASE}/billing/checkout`, {
     method: "POST",

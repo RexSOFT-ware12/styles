@@ -33,9 +33,15 @@ const FEATURES: FeatureRow[] = [
   { label: "SVG customization (steps, color, background)", icon: Sparkles, free: "3-day trial", premium: true },
 ];
 
+// Fallback for logged-out visitors / before the entitlement fetch resolves —
+// kept in sync with style-backend's lib/premiumPricing.js CURRENT_PRICE_CENTS.
+// Once `entitlement` loads, entitlement.currentPremiumPriceUsd (the backend's
+// source of truth) takes over.
+const FALLBACK_PREMIUM_PRICE_USD = 29.99;
+
 /**
  * The Free vs Premium comparison at /pricing — the one place on the site
- * that actually explains what the $19.99/mo plan buys you. Linked from the
+ * that actually explains what the Premium plan buys you. Linked from the
  * header nav, the sitewide trial banner, and every gated tool's paywall.
  */
 export default function PricingPlans() {
@@ -49,6 +55,14 @@ export default function PricingPlans() {
   const isPremium = !!entitlement && entitlement.plan === "premium" && entitlement.hasAccess;
   const isFreeTrial = !!entitlement && entitlement.plan === "free" && entitlement.trialActive;
   const isExpired = !!entitlement && !entitlement.hasAccess;
+
+  // For an active subscriber, show what THEY actually pay (which may be a
+  // grandfathered rate); otherwise show today's list price for new signups.
+  const displayedPremiumPrice =
+    isPremium && entitlement?.premiumPriceUsd != null
+      ? entitlement.premiumPriceUsd
+      : entitlement?.currentPremiumPriceUsd ?? FALLBACK_PREMIUM_PRICE_USD;
+  const showGrandfatheredNote = isPremium && !!entitlement?.isGrandfathered;
 
   async function handleUpgrade() {
     if (!token) return;
@@ -85,7 +99,8 @@ export default function PricingPlans() {
         </h1>
         <p className="text-muted-foreground max-w-xl mx-auto">
           Try the Garment Tool, Pose Tool, and SVG customization free for 3 days from signup. Keep
-          using them for $19.99/mo — cancel anytime.
+          using them for ${(entitlement?.currentPremiumPriceUsd ?? FALLBACK_PREMIUM_PRICE_USD).toFixed(2)}/mo —
+          cancel anytime.
         </p>
       </div>
 
@@ -155,9 +170,16 @@ export default function PricingPlans() {
             Unlimited access to every gated tool, for as long as you need it.
           </p>
           <div className="mb-6">
-            <span className="text-4xl font-bold text-foreground">$19.99</span>
+            <span className="text-4xl font-bold text-foreground">${displayedPremiumPrice.toFixed(2)}</span>
             <span className="text-muted-foreground text-sm"> / month</span>
           </div>
+
+          {showGrandfatheredNote && (
+            <p className="text-xs text-muted-foreground -mt-4 mb-6">
+              You're on a legacy rate from before our price change — it stays this way as long as you
+              keep your subscription active.
+            </p>
+          )}
 
           <ul className="space-y-3 mb-8">
             {FEATURES.map(({ label, premium }) => (
