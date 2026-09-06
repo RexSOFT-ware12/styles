@@ -80,7 +80,7 @@ function PlanStatusCard() {
             </div>
             <p className="text-sm text-muted-foreground">
               {isPremium
-                ? "$19.99/mo — the Garment Tool, Pose Tool, and SVG customization are all unlocked."
+                ? `$${(entitlement.premiumPriceUsd ?? entitlement.currentPremiumPriceUsd).toFixed(2)}/mo — the Garment Tool, Pose Tool, and SVG customization are all unlocked.`
                 : entitlement.trialActive
                 ? `${entitlement.trialDaysLeft} day${entitlement.trialDaysLeft === 1 ? "" : "s"} left in your free trial.`
                 : "Your free trial has ended."}
@@ -209,6 +209,17 @@ export default function AccountOverviewPage() {
               <div>
                 <p className="font-medium">Garment Tool</p>
                 <p className="text-sm text-muted-foreground">Process a design .psd</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/account/api">
+          <Card className="hover:border-primary transition-colors cursor-pointer h-full">
+            <CardContent className="pt-6 flex items-center gap-3">
+              <KeyRound className="h-5 w-5 text-primary" />
+              <div>
+                <p className="font-medium">API Access</p>
+                <p className="text-sm text-muted-foreground">Manage keys &amp; usage</p>
               </div>
             </CardContent>
           </Card>

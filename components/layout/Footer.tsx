@@ -43,6 +43,7 @@ export default function Footer() {
         { href: "/help", label: "Help Center" },
         { href: "/licensing", label: "Download & Licensing" },
         { href: "/returns", label: "Returns & Exchanges" },
+        { href: "/developers", label: "API for Developers" },
       ],
     },
     {

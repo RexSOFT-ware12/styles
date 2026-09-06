@@ -65,6 +65,7 @@ export default function Header() {
     { href: "/design-patterns", label: "Design Patterns" },
     { href: "/account/garment-tool", label: "Garment Tool" },
     { href: "/pricing", label: "Premium" },
+    { href: "/developers", label: "API" },
   ];
 
   // Wires the (previously decorative) search inputs to the backend's

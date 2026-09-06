@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
-import { Download, PersonStanding, Scissors, User } from "lucide-react";
+import { Download, KeyRound, PersonStanding, Scissors, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -11,6 +11,7 @@ const TABS = [
   { href: "/account/purchases", label: "Purchases", icon: Download, exact: false },
   { href: "/account/garment-tool", label: "Garment Tool", icon: Scissors, exact: false },
   { href: "/account/pose-tool", label: "Pose Tool", icon: PersonStanding, exact: false },
+  { href: "/account/api", label: "API Access", icon: KeyRound, exact: false },
 ];
 
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
