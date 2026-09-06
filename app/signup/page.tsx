@@ -7,12 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 
-export default function SignUpPage() {
+function SignUpContent() {
   const { register } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/";
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -26,7 +28,7 @@ export default function SignUpPage() {
     setLoading(true);
     try {
       await register(name, email, password);
-      router.push("/");
+      router.push(redirectTo);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign up failed");
     } finally {
@@ -43,7 +45,7 @@ export default function SignUpPage() {
         <CardContent>
           <GoogleSignInButton
             text="signup_with"
-            onSuccess={() => router.push("/")}
+            onSuccess={() => router.push(redirectTo)}
             onError={(message) => setError(message)}
           />
 
@@ -110,5 +112,13 @@ export default function SignUpPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function SignUpPage() {
+  return (
+    <Suspense>
+      <SignUpContent />
+    </Suspense>
   );
 }

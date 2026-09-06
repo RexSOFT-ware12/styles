@@ -64,6 +64,7 @@ export default function Header() {
   const navItems = [
     { href: "/design-patterns", label: "Design Patterns" },
     { href: "/account/garment-tool", label: "Garment Tool" },
+    { href: "/pricing", label: "Premium" },
   ];
 
   // Wires the (previously decorative) search inputs to the backend's

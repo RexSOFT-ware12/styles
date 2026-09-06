@@ -1,5 +1,6 @@
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
+import PremiumTrialBanner from "@/components/layout/PremiumTrialBanner";
 import SiteChat from "@/components/layout/SiteChat";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
@@ -46,6 +47,7 @@ export default function RootLayout({
             <WishlistProvider>
               <SiteChatProvider>
                 <Suspense fallback={null}>
+                  <PremiumTrialBanner />
                   <Header />
                 </Suspense>
                 <main className="flex-grow">{children}</main>
