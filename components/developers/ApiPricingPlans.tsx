@@ -18,18 +18,18 @@ const TIERS = [
   {
     id: "starter" as const,
     label: "API Starter",
-    price: "$49",
+    price: "$80",
     period: "/mo",
     blurb: "For a first integration or a low-volume production use.",
-    features: ["500 processed images / mo included", "$0.05/image overage (with segmentation)", "$0.02/image overage (background removal only)", "Self-serve — subscribe instantly"],
+    features: ["3 processed images / mo included", "$49/image overage (with segmentation)", "$20/image overage (background removal only)", "Self-serve — subscribe instantly"],
   },
   {
     id: "growth" as const,
     label: "API Growth",
-    price: "$149",
+    price: "$2,900",
     period: "/mo",
     blurb: "For higher-volume or multi-customer integrations.",
-    features: ["2,500 processed images / mo included", "$0.05/image overage (with segmentation)", "$0.02/image overage (background removal only)", "Self-serve — subscribe instantly"],
+    features: ["250 processed images / mo included", "$49/image overage (with segmentation)", "$20/image overage (background removal only)", "Self-serve — subscribe instantly"],
     highlight: true,
   },
   {
