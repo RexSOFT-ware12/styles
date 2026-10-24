@@ -2,13 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { cn, isSvgSrc } from "@/lib/utils";
 import { Check, Eye, Heart, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Product {
   id: number | string;
@@ -24,9 +25,15 @@ interface Product {
 }
 
 export default function ProductCard({ product }: { product: Product }) {
+  const [isImageLoading, setIsImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
+
+  useEffect(() => {
+    setIsImageLoading(true);
+    setImageError(false);
+  }, [product.image]);
 
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -86,8 +93,8 @@ export default function ProductCard({ product }: { product: Product }) {
         </Button>
 
         <Link href={`/product/${product.id}`} className="block relative">
-          <div className="aspect-square overflow-hidden bg-muted">
-            {!imageError ? (
+          <div className="relative aspect-square overflow-hidden bg-muted">
+            {!imageError && (
               isSvgSrc(product.image) ? (
                 // Plain <img> for SVGs — bypasses next/image's optimizer
                 // entirely (see lib/utils.ts:isSvgSrc for why).
@@ -95,6 +102,7 @@ export default function ProductCard({ product }: { product: Product }) {
                   src={product.image}
                   alt={product.name}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 bg-white"
+                  onLoad={() => setIsImageLoading(false)}
                   onError={() => setImageError(true)}
                 />
               ) : (
@@ -104,15 +112,13 @@ export default function ProductCard({ product }: { product: Product }) {
                   width={400}
                   height={400}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  onLoad={() => setIsImageLoading(false)}
                   onError={() => setImageError(true)}
                 />
               )
-            ) : (
-              <div className="w-full h-full bg-muted flex items-center justify-center">
-                <div className="text-muted-foreground text-xs text-center px-2">
-                  Image not available
-                </div>
-              </div>
+            )}
+            {(isImageLoading || imageError) && (
+              <Skeleton className="absolute inset-0 h-full w-full rounded-none" />
             )}
           </div>
 
