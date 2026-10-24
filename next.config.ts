@@ -78,14 +78,14 @@ const nextConfig: NextConfig = {
         // only thing that ever reads from the bucket, so this is the actual
         // hostname+path every GCS-backed product image resolves to.
         protocol: "https",
-        hostname: "stream-sell.de.r.appspot.com",
+        hostname: "backend.fabricnow.pro",
         pathname: "/api/products/assets/**",
       },
       {
         // Fallback local /uploads route when the backend is deployed but no
         // storage bucket is configured (e.g. the App Engine backend).
         protocol: "https",
-        hostname: "stream-sell.de.r.appspot.com",
+        hostname: "backend.fabricnow.pro",
         pathname: "/uploads/**",
       },
     ],
