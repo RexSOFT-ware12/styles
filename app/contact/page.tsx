@@ -20,6 +20,8 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+
 export default function Contact() {
   const { openChat } = useSiteChat();
   const [topic, setTopic] = useState("");
@@ -61,7 +63,7 @@ export default function Contact() {
     setIsSubmitted(false);
 
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch(`${API_BASE}/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...formData, topic }),
