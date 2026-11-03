@@ -57,7 +57,7 @@ export default function Contact() {
     {
       icon: Mail,
       title: "Email Us",
-      details: ["support@fabricnow.pro", "support@tonasel.com"],
+      details: ["support@fabricnow.pro" ],
       description: "Send us an email anytime",
     },
     {
