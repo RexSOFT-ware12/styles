@@ -8,7 +8,6 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { useSiteChat } from "@/context/SiteChatContext";
 import {
-  CheckCircle,
   Clock,
   Headphones,
   Mail,
@@ -20,8 +19,6 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
-
 export default function Contact() {
   const { openChat } = useSiteChat();
   const [topic, setTopic] = useState("");
@@ -31,10 +28,6 @@ export default function Contact() {
     subject: "",
     message: "",
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [submitError, setSubmitError] = useState("");
-
   useEffect(() => {
     const urlTopic = new URLSearchParams(window.location.search).get("topic") ?? "";
     setTopic(urlTopic);
@@ -52,40 +45,30 @@ export default function Contact() {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setSubmitError("");
-    setIsSubmitted(false);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitError("");
-    setIsSubmitted(false);
+    const emailBody = [
+      formData.message,
+      "",
+      "---",
+      `Name: ${formData.name}`,
+      `Reply-to: ${formData.email}`,
+      topic ? `Topic: ${topic}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+    const gmailUrl = new URL("https://mail.google.com/mail/");
+    gmailUrl.search = new URLSearchParams({
+      view: "cm",
+      fs: "1",
+      to: "support@fabricnow.pro",
+      su: formData.subject,
+      body: emailBody,
+    }).toString();
 
-    try {
-      const response = await fetch(`${API_BASE}/contact`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, topic }),
-      });
-
-      if (!response.ok) {
-        throw new Error(
-          `We couldn't send your message (error ${response.status}). Please try again or email support@fabricnow.pro.`
-        );
-      }
-
-      setIsSubmitted(true);
-      setFormData({ name: "", email: "", subject: "", message: "" });
-    } catch (error) {
-      setSubmitError(
-        error instanceof Error
-          ? error.message
-          : "We couldn't send your message. Please try again or email support@fabricnow.pro."
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+    window.location.assign(gmailUrl.toString());
   };
 
   const contactInfo = [
@@ -165,8 +148,9 @@ export default function Contact() {
                     Send us a message
                   </CardTitle>
                   <p className="text-muted-foreground">
-                    Fill out the form below and we&apos;ll get back to you as
-                    soon as possible.
+                    Fill out the form and we&apos;ll open a prefilled Gmail
+                    message addressed to support@fabricnow.pro. Review it and
+                    press Send in Gmail.
                   </p>
                 </CardHeader>
                 <CardContent>
@@ -253,39 +237,15 @@ export default function Contact() {
                       />
                     </div>
 
-                    {submitError && (
-                      <p role="alert" className="text-sm text-destructive">
-                        {submitError}
-                      </p>
-                    )}
-                    {isSubmitted && (
-                      <p role="status" className="text-sm text-primary">
-                        Your message was sent. We&apos;ll get back to you as soon as possible.
-                      </p>
-                    )}
-
                     <Button
                       type="submit"
                       size="lg"
-                      disabled={isSubmitting}
                       className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90"
                     >
-                      {isSubmitting ? (
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                          Sending...
-                        </div>
-                      ) : isSubmitted ? (
-                        <div className="flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4" />
-                          Message Sent!
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <Send className="h-4 w-4" />
-                          Send Message
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2">
+                        <Send className="h-4 w-4" />
+                        Continue to Gmail
+                      </div>
                     </Button>
                   </form>
                 </CardContent>
