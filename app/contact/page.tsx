@@ -18,10 +18,11 @@ import {
   Send,
   Shield,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Contact() {
   const { openChat } = useSiteChat();
+  const [topic, setTopic] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -30,27 +31,59 @@ export default function Contact() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
+  useEffect(() => {
+    const urlTopic = new URLSearchParams(window.location.search).get("topic") ?? "";
+    setTopic(urlTopic);
+    if (urlTopic === "api-enterprise") {
+      setFormData((previous) =>
+        previous.subject
+          ? previous
+          : { ...previous, subject: "API Enterprise inquiry" }
+      );
+    }
+  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setSubmitError("");
+    setIsSubmitted(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError("");
+    setIsSubmitted(false);
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, topic }),
+      });
 
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+      if (!response.ok) {
+        throw new Error(
+          `We couldn't send your message (error ${response.status}). Please try again or email support@fabricnow.pro.`
+        );
+      }
 
-    setTimeout(() => {
-      setIsSubmitted(false);
+      setIsSubmitted(true);
       setFormData({ name: "", email: "", subject: "", message: "" });
-    }, 3000);
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "We couldn't send your message. Please try again or email support@fabricnow.pro."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [
@@ -149,6 +182,7 @@ export default function Contact() {
                           name="name"
                           type="text"
                           placeholder="John Doe"
+                          maxLength={100}
                           value={formData.name}
                           onChange={handleInputChange}
                           required
@@ -168,6 +202,7 @@ export default function Contact() {
                           name="email"
                           type="email"
                           placeholder="john@example.com"
+                          maxLength={254}
                           value={formData.email}
                           onChange={handleInputChange}
                           required
@@ -188,6 +223,7 @@ export default function Contact() {
                         name="subject"
                         type="text"
                         placeholder="How can we help you?"
+                        maxLength={200}
                         value={formData.subject}
                         onChange={handleInputChange}
                         required
@@ -207,6 +243,7 @@ export default function Contact() {
                         name="message"
                         placeholder="Tell us more about your question or concern..."
                         rows={6}
+                        maxLength={5000}
                         value={formData.message}
                         onChange={handleInputChange}
                         required
@@ -214,10 +251,21 @@ export default function Contact() {
                       />
                     </div>
 
+                    {submitError && (
+                      <p role="alert" className="text-sm text-destructive">
+                        {submitError}
+                      </p>
+                    )}
+                    {isSubmitted && (
+                      <p role="status" className="text-sm text-primary">
+                        Your message was sent. We&apos;ll get back to you as soon as possible.
+                      </p>
+                    )}
+
                     <Button
                       type="submit"
                       size="lg"
-                      disabled={isSubmitting || isSubmitted}
+                      disabled={isSubmitting}
                       className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90"
                     >
                       {isSubmitting ? (
