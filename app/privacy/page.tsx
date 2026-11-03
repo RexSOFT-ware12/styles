@@ -95,7 +95,7 @@ export default function PrivacyPolicy() {
       <h2>Contact us</h2>
       <p>
         Questions about this policy? Reach us at{" "}
-        <a href="mailto:info@fabricnow.com">info@fabricnow.com</a> or via
+        <a href="mailto:support@fabricnow.pro">support@fabricnow.pro</a> or via
         our <a href="/contact">Contact page</a>.
       </p>
     </LegalLayout>

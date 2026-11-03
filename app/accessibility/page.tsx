@@ -35,7 +35,7 @@ export default function Accessibility() {
         If you run into any part of the site that&apos;s difficult to use
         with a screen reader, keyboard, or other assistive technology,
         please tell us — we want to fix it. Reach us at{" "}
-        <a href="mailto:info@fabricnow.com">info@fabricnow.com</a> or via
+        <a href="mailto:support@fabricnow.pro">support@fabricnow.pro</a> or via
         our <a href="/contact">Contact page</a>, and include the page you
         were on and what happened, if you can.
       </p>
