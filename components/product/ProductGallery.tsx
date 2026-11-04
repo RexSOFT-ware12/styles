@@ -2,9 +2,9 @@
 
 import { Badge } from "@/components/ui/badge";
 import { cn, isSvgSrc, makeSvgResponsive, recolorPatternSvg } from "@/lib/utils";
-import { Check, Loader2, Palette } from "lucide-react";
+import { Check, Palette } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface GalleryImage {
   src: string;
@@ -70,15 +70,8 @@ export default function ProductGallery({
   const [autoplayStopped, setAutoplayStopped] = useState(false);
   const [hovering, setHovering] = useState(false);
 
-  // What's actually painted in the big frame right now. This can lag one
-  // step behind `activeIndex` while the newly-picked image is still
-  // downloading — we keep showing the last-loaded shot (with a spinner on
-  // top) instead of leaving a blank frame, then swap the instant it's ready.
-  const [displayed, setDisplayed] = useState<GalleryImage>(gallery[0]);
-  const [isSwitching, setIsSwitching] = useState(false);
-  const loadedSrcs = useRef<Set<string>>(new Set());
-
   const active = gallery[activeIndex] || gallery[0];
+  const displayed = active;
 
   // Cycle through just the main deck (hero shots + fabric close-up) —
   // never auto-advances into the manual sub-gallery. Stops for good once
@@ -91,58 +84,6 @@ export default function ProductGallery({
     }, AUTOPLAY_INTERVAL_MS);
     return () => clearInterval(id);
   }, [autoplayStopped, hovering, mainDeck.length]);
-
-  // Preload every gallery image into the browser cache in the background as
-  // soon as the gallery is known, so most thumbnail clicks resolve instantly
-  // (no spinner) — the spinner only shows up for a shot that genuinely
-  // hasn't finished downloading yet.
-  useEffect(() => {
-    gallery.forEach((img) => {
-      if (!img?.src || loadedSrcs.current.has(img.src)) return;
-      const preloadEl = new window.Image();
-      preloadEl.src = img.src;
-      preloadEl.onload = () => loadedSrcs.current.add(img.src);
-    });
-  }, [gallery]);
-
-  // Whenever the selected image changes, only swap the big frame over once
-  // the image data has actually arrived — show a quick spinner on top of
-  // the still-visible current image in the meantime instead of a blank gap.
-  useEffect(() => {
-    if (!active) return;
-    if (active.src === displayed.src) {
-      setIsSwitching(false);
-      return;
-    }
-    if (loadedSrcs.current.has(active.src)) {
-      setDisplayed(active);
-      setIsSwitching(false);
-      return;
-    }
-
-    let cancelled = false;
-    setIsSwitching(true);
-
-    const img = new window.Image();
-    img.src = active.src;
-    const finish = () => {
-      if (cancelled) return;
-      loadedSrcs.current.add(active.src);
-      setDisplayed(active);
-      setIsSwitching(false);
-    };
-    if (img.complete) {
-      finish();
-    } else {
-      img.onload = finish;
-      img.onerror = finish; // still swap so the broken-image state shows, rather than spinning forever
-    }
-
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active?.src]);
 
   const selectImage = (index: number) => {
     setActiveIndex(index);
@@ -231,10 +172,7 @@ export default function ProductGallery({
               <div
                 role="img"
                 aria-label={displayed.label ? `${name} — ${displayed.label}` : name}
-                className={cn(
-                  "absolute inset-0 w-full h-full rounded-xl transition-opacity duration-150 bg-white flex items-center justify-center p-6",
-                  isSwitching && "opacity-60"
-                )}
+                className="absolute inset-0 flex h-full w-full items-center justify-center rounded-xl bg-white p-6 transition-opacity duration-150"
                 dangerouslySetInnerHTML={{ __html: recoloredMarkup }}
               />
             ) : (
@@ -245,9 +183,8 @@ export default function ProductGallery({
                 src={displayed.src}
                 alt={displayed.label ? `${name} — ${displayed.label}` : name}
                 className={cn(
-                  "absolute inset-0 w-full h-full rounded-xl transition-opacity duration-150 bg-white",
-                  isFilled(displayed.label) ? "object-cover" : "object-contain",
-                  isSwitching && "opacity-60"
+                  "absolute inset-0 h-full w-full rounded-xl bg-white transition-opacity duration-150",
+                  isFilled(displayed.label) ? "object-cover" : "object-contain"
                 )}
               />
             )
@@ -261,15 +198,9 @@ export default function ProductGallery({
               sizes="(max-width: 500px) 100vw, 500px"
               className={cn(
                 "rounded-xl transition-opacity duration-150",
-                isFilled(displayed.label) ? "object-cover" : "object-contain",
-                isSwitching && "opacity-60"
+                isFilled(displayed.label) ? "object-cover" : "object-contain"
               )}
             />
-          )}
-          {isSwitching && (
-            <div className="absolute inset-0 flex items-center justify-center bg-background/20">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" aria-label="Loading image" />
-            </div>
           )}
           {displayed.label && (
             <Badge className="absolute top-3 left-3 bg-background/90 text-foreground border border-border shadow-sm">
@@ -391,4 +322,3 @@ export default function ProductGallery({
     </div>
   );
 }
-
