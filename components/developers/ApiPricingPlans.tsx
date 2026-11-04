@@ -63,6 +63,7 @@ export default function ApiPricingPlans() {
     setStartingTier(tier);
     try {
       await startApiCheckout(token, tier);
+      setStartingTier(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't start checkout");
       setStartingTier(null);

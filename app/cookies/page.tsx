@@ -35,9 +35,9 @@ export default function CookiePolicy() {
 
       <h2>Payment processing</h2>
       <p>
-        When you check out, Stripe may set its own cookies to process your
+        When you check out, Paystack may set its own cookies to process your
         payment securely and prevent fraud. These are governed by
-        Stripe&apos;s own privacy practices, not ours.
+        Paystack&apos;s own privacy practices, not ours.
       </p>
 
       <h2>Managing storage in your browser</h2>

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import { changePassword, updateProfile } from "@/lib/auth";
-import { openBillingPortal, startPremiumCheckout } from "@/lib/billing";
+import { cancelPremiumSubscription, startPremiumCheckout } from "@/lib/billing";
 import { useEntitlement } from "@/lib/useEntitlement";
 import { CheckCircle2, Download, KeyRound, Loader2, Scissors, Sparkles, User } from "lucide-react";
 import Link from "next/link";
@@ -20,7 +20,7 @@ function PlanStatusCard() {
   const justUpgraded = searchParams.get("upgraded") === "1";
 
   const [starting, setStarting] = useState(false);
-  const [openingPortal, setOpeningPortal] = useState(false);
+  const [cancelingSubscription, setCancelingSubscription] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleUpgrade = async () => {
@@ -29,21 +29,24 @@ function PlanStatusCard() {
     setStarting(true);
     try {
       await startPremiumCheckout(token);
+      setStarting(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't start checkout");
       setStarting(false);
     }
   };
 
-  const handleManageBilling = async () => {
+  const handleCancelSubscription = async () => {
     if (!token) return;
     setError(null);
-    setOpeningPortal(true);
+    setCancelingSubscription(true);
     try {
-      await openBillingPortal(token);
+      await cancelPremiumSubscription(token);
+      window.location.reload();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Couldn't open billing portal");
-      setOpeningPortal(false);
+      setError(err instanceof Error ? err.message : "Couldn't cancel subscription");
+    } finally {
+      setCancelingSubscription(false);
     }
   };
 
@@ -88,9 +91,9 @@ function PlanStatusCard() {
           </div>
 
           {isPremium ? (
-            <Button size="sm" variant="outline" onClick={handleManageBilling} disabled={openingPortal}>
-              {openingPortal && <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />}
-              Manage billing
+            <Button size="sm" variant="outline" onClick={handleCancelSubscription} disabled={cancelingSubscription || entitlement.cancelAtPeriodEnd}>
+              {cancelingSubscription && <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />}
+              {entitlement.cancelAtPeriodEnd ? "Renewal canceled" : "Cancel subscription"}
             </Button>
           ) : (
             <Button size="sm" onClick={handleUpgrade} disabled={starting}>

@@ -60,7 +60,7 @@ const categories = [
       },
       {
         q: "What payment methods do you accept?",
-        a: "All major credit and debit cards, processed securely through Stripe.",
+        a: "All major credit and debit cards, processed securely through Paystack.",
       },
       {
         q: "What's your refund policy?",

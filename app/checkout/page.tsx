@@ -21,8 +21,7 @@ function CheckoutContent() {
   const [error, setError] = useState<string | null>(null);
 
   const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-  const tax = subtotal * 0.08;
-  const total = subtotal + tax;
+  const total = subtotal;
   const itemCount = cart.length;
 
   if (!authLoading && !user) {
@@ -55,11 +54,11 @@ function CheckoutContent() {
     setSubmitting(true);
     setError(null);
     try {
-      const { url } = await createCheckoutSession(
+      await createCheckoutSession(
         token,
         cart.map((item) => ({ productId: item.id }))
       );
-      window.location.href = url;
+      setSubmitting(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't start checkout");
       setSubmitting(false);
@@ -98,11 +97,6 @@ function CheckoutContent() {
               <span className="text-muted-foreground">Subtotal ({itemCount} items)</span>
               <span className="font-medium">${subtotal.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Tax</span>
-              <span className="font-medium">${tax.toFixed(2)}</span>
-            </div>
-
             <Separator />
 
             <div className="flex justify-between">
@@ -115,13 +109,13 @@ function CheckoutContent() {
 
           <Button size="lg" className="w-full" onClick={handleCheckout} disabled={submitting}>
             <CreditCard className="h-4 w-4 mr-2" />
-            {submitting ? "Redirecting to payment..." : `Pay $${total.toFixed(2)}`}
+            {submitting ? "Opening secure checkout..." : `Pay $${total.toFixed(2)}`}
           </Button>
 
           <div className="space-y-3 pt-4 border-t border-border">
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
               <Lock className="h-4 w-4 text-green-500" />
-              <span>Payment is securely processed by Stripe</span>
+              <span>Payment is securely processed by Paystack</span>
             </div>
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
               <Download className="h-4 w-4 text-blue-500" />

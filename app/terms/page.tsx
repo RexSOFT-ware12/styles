@@ -43,7 +43,7 @@ export default function Terms() {
 
       <h2>Payment</h2>
       <p>
-        Prices are shown in USD and charged at checkout through Stripe.
+        Prices are shown in USD and charged at checkout through Paystack.
         We reserve the right to correct pricing errors before an order is
         completed.
       </p>

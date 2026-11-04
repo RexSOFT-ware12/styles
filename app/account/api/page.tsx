@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
-import { openBillingPortal } from "@/lib/billing";
+import { cancelApiSubscription } from "@/lib/apiBilling";
 import { ApiKeySummary, createApiKey, revokeApiKey } from "@/lib/apiBilling";
 import { useApiEntitlement } from "@/lib/useApiEntitlement";
 import { Check, Copy, KeyRound, Loader2, Sparkles, Trash2 } from "lucide-react";
@@ -125,9 +125,10 @@ export default function AccountApiPage() {
     if (!token) return;
     setOpeningPortal(true);
     try {
-      await openBillingPortal(token);
+      await cancelApiSubscription(token);
+      window.location.reload();
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Couldn't open billing portal");
+      alert(err instanceof Error ? err.message : "Couldn't cancel API subscription");
       setOpeningPortal(false);
     }
   }
@@ -229,9 +230,9 @@ export default function AccountApiPage() {
                     </p>
                   )}
                 </div>
-                <Button size="sm" variant="outline" onClick={handleManageBilling} disabled={openingPortal}>
+                <Button size="sm" variant="outline" onClick={handleManageBilling} disabled={openingPortal || !!entitlement?.cancelAtPeriodEnd}>
                   {openingPortal && <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />}
-                  Manage billing
+                  {entitlement?.cancelAtPeriodEnd ? "Renewal canceled" : "Cancel subscription"}
                 </Button>
               </div>
               {!isActive && (

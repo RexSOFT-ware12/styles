@@ -30,7 +30,7 @@ export default function PrivacyPolicy() {
         </li>
         <li>
           <strong>Payment information</strong> — payments are processed by
-          Stripe. We never see or store your full card number; Stripe
+          Paystack. We never see or store your full card number; Paystack
           handles that under its own privacy and security practices.
         </li>
         <li>
@@ -59,7 +59,7 @@ export default function PrivacyPolicy() {
       <h2>Third-party services</h2>
       <p>
         We share the minimum data necessary with a small number of service
-        providers to run the store — Stripe for payments, and our hosting and
+        providers to run the store — Paystack for payments, and our hosting and
         file-storage providers for delivering your downloads. These
         providers only use your data to provide their service to us.
       </p>

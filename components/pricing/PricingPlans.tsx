@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
-import { openBillingPortal, startPremiumCheckout } from "@/lib/billing";
+import { cancelPremiumSubscription, startPremiumCheckout } from "@/lib/billing";
 import { useEntitlement } from "@/lib/useEntitlement";
 import { cn } from "@/lib/utils";
 import {
@@ -49,7 +49,7 @@ export default function PricingPlans() {
   const { entitlement, loading: entitlementLoading } = useEntitlement(token);
 
   const [starting, setStarting] = useState(false);
-  const [openingPortal, setOpeningPortal] = useState(false);
+  const [cancelingSubscription, setCancelingSubscription] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const isPremium = !!entitlement && entitlement.plan === "premium" && entitlement.hasAccess;
@@ -70,21 +70,24 @@ export default function PricingPlans() {
     setStarting(true);
     try {
       await startPremiumCheckout(token);
+      setStarting(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't start checkout");
       setStarting(false);
     }
   }
 
-  async function handleManageBilling() {
+  async function handleCancelSubscription() {
     if (!token) return;
     setError(null);
-    setOpeningPortal(true);
+    setCancelingSubscription(true);
     try {
-      await openBillingPortal(token);
+      await cancelPremiumSubscription(token);
+      window.location.reload();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Couldn't open billing portal");
-      setOpeningPortal(false);
+      setError(err instanceof Error ? err.message : "Couldn't cancel subscription");
+    } finally {
+      setCancelingSubscription(false);
     }
   }
 
@@ -208,9 +211,9 @@ export default function PricingPlans() {
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Loading…
               </Button>
             ) : isPremium ? (
-              <Button variant="outline" className="w-full" onClick={handleManageBilling} disabled={openingPortal}>
-                {openingPortal && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                Manage billing
+              <Button variant="outline" className="w-full" onClick={handleCancelSubscription} disabled={cancelingSubscription || entitlement.cancelAtPeriodEnd}>
+                {cancelingSubscription && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {entitlement.cancelAtPeriodEnd ? "Renewal canceled" : "Cancel subscription"}
               </Button>
             ) : (
               <Button
@@ -226,7 +229,7 @@ export default function PricingPlans() {
 
           {isPremium && (
             <p className="text-xs text-muted-foreground text-center mt-3">
-              Manage billing to update your card or cancel anytime.
+              Cancel renewal at any time. Your paid access remains active through the current billing period.
             </p>
           )}
         </div>

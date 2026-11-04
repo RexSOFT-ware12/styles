@@ -12,9 +12,9 @@ function CheckoutSuccessContent() {
   const orderId = searchParams.get("order");
   const { clearCart } = useCart();
 
-  // Payment succeeded (Stripe only sends us here after a successful session),
+  // Paystack redirects here after checkout;
   // so the cart's job is done — clear it. The order itself is confirmed
-  // server-side by the Stripe webhook, which is what actually unlocks the
+  // server-side by the Paystack webhook, which is what actually unlocks the
   // download on the Purchases page.
   useEffect(() => {
     clearCart();

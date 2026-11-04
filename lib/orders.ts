@@ -1,3 +1,5 @@
+import { openPaystackInline } from "@/lib/paystackInline";
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
 export interface OrderItem {
@@ -24,11 +26,11 @@ async function parseError(res: Response): Promise<string> {
   }
 }
 
-/** Kicks off a Stripe Checkout Session for the given cart items and returns the redirect URL. */
+/** Initializes a GHS Paystack payment and opens secure inline checkout. */
 export async function createCheckoutSession(
   token: string,
   items: { productId: string | number }[]
-): Promise<{ url: string; orderId: string }> {
+): Promise<{ access_code: string; orderId: string }> {
   const res = await fetch(`${API_BASE}/orders/checkout`, {
     method: "POST",
     headers: {
@@ -38,7 +40,9 @@ export async function createCheckoutSession(
     body: JSON.stringify({ items }),
   });
   if (!res.ok) throw new Error(await parseError(res));
-  return res.json();
+  const checkout = await res.json();
+  await openPaystackInline(checkout.access_code);
+  return checkout;
 }
 
 /** The signed-in user's full purchase history — powers the "My Purchases" page. */

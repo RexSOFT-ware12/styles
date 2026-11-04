@@ -1,3 +1,5 @@
+import { openPaystackInline } from "@/lib/paystackInline";
+
 // Client for the API-access tiers (developer/programmatic access via an
 // API key, separate product from the consumer Premium plan — see
 // lib/billing.ts for that one). Talks to the main FabricNow backend's
@@ -25,6 +27,7 @@ export interface ApiEntitlement {
   hasAccess: boolean;
   tier: ApiTier | null;
   status: string;
+  cancelAtPeriodEnd: boolean;
   quota: number | null;
   used: number;
   remaining: number | null;
@@ -58,7 +61,7 @@ export async function fetchApiStatus(token: string): Promise<ApiStatus> {
   return res.json();
 }
 
-/** Kicks off Stripe Checkout for the given self-serve tier ("starter" | "growth") and redirects there. */
+/** Opens Paystack Inline for the selected API subscription. */
 export async function startApiCheckout(token: string, tier: "starter" | "growth"): Promise<void> {
   const res = await fetch(`${API_BASE}/billing/api-checkout`, {
     method: "POST",
@@ -66,8 +69,18 @@ export async function startApiCheckout(token: string, tier: "starter" | "growth"
     body: JSON.stringify({ tier }),
   });
   if (!res.ok) throw new Error(await parseError(res));
-  const { url } = await res.json();
-  window.location.href = url;
+  const { access_code } = await res.json();
+  await openPaystackInline(access_code);
+}
+
+/** Cancels API plan renewal; access remains active through the paid period. */
+export async function cancelApiSubscription(token: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/billing/cancel`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ product: "api" }),
+  });
+  if (!res.ok) throw new Error(await parseError(res));
 }
 
 /** Generates a new API key. Requires an active API subscription — see startApiCheckout. */

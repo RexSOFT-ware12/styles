@@ -1,3 +1,5 @@
+import { openPaystackInline } from "@/lib/paystackInline";
+
 // Freemium gating for the Garment Tool, Pose Tool, and SVG customization:
 // 3 free days from signup, then premium ($29.99/mo for new subscribers;
 // existing subscribers may be grandfathered at a lower price — see
@@ -9,6 +11,7 @@ export interface EntitlementStatus {
   hasAccess: boolean;
   plan: "free" | "premium";
   subscriptionStatus: string;
+  cancelAtPeriodEnd: boolean;
   trialActive: boolean;
   trialEndsAt: string;
   trialDaysLeft: number;
@@ -42,24 +45,23 @@ export async function fetchEntitlement(token: string): Promise<EntitlementStatus
   return res.json();
 }
 
-/** Kicks off Stripe Checkout for the premium plan and redirects there. */
+/** Initializes a GHS Paystack transaction and opens the secure inline checkout. */
 export async function startPremiumCheckout(token: string): Promise<void> {
   const res = await fetch(`${API_BASE}/billing/checkout`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error(await parseError(res));
-  const { url } = await res.json();
-  window.location.href = url;
+  const { access_code } = await res.json();
+  await openPaystackInline(access_code);
 }
 
-/** Opens Stripe's hosted Billing Portal so a subscriber can update or cancel. */
-export async function openBillingPortal(token: string): Promise<void> {
-  const res = await fetch(`${API_BASE}/billing/portal`, {
+/** Paystack has no hosted billing portal; cancellation is handled in FabricNow. */
+export async function cancelPremiumSubscription(token: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/billing/cancel`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ product: "premium" }),
   });
   if (!res.ok) throw new Error(await parseError(res));
-  const { url } = await res.json();
-  window.location.href = url;
 }
