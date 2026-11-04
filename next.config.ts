@@ -54,6 +54,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/**",
+      },
       // Derived from NEXT_PUBLIC_API_URL — keeps working automatically if
       // the backend host changes.
       ...backendImagePatterns(),
