@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { cn, isSvgSrc } from "@/lib/utils";
-import { Check, Eye, Heart, ShoppingCart } from "lucide-react";
+import { Bell, Check, Eye, Heart, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -90,6 +90,13 @@ export default function ProductCard({ product }: { product: Product }) {
         </Button>
 
         <Link href={`/product/${product.id}`} className="block relative">
+          <div className="absolute left-2 top-2 z-10 inline-flex items-center gap-1.5 rounded-full bg-destructive px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-destructive-foreground shadow-md">
+            <Bell
+              aria-hidden="true"
+              className="h-3.5 w-3.5 origin-top motion-safe:group-hover:animate-[bell-ring_0.7s_ease-in-out]"
+            />
+            On Sale
+          </div>
           <div className="relative aspect-square overflow-hidden bg-muted">
             {!imageError ? (
               isSvgSrc(product.image) ? (

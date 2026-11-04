@@ -194,6 +194,23 @@
   }
 }
 
+@keyframes bell-ring {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  15%,
+  45%,
+  75% {
+    transform: rotate(14deg);
+  }
+  30%,
+  60%,
+  90% {
+    transform: rotate(-14deg);
+  }
+}
+
 /* Marching-dashes progress bar fill, used by the Garment Tool's stitch
    progress track. Pattern repeat is 7px, so travel exactly one repeat. */
 @keyframes stitch-run {
