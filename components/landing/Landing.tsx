@@ -83,11 +83,11 @@ const TRUST = [
 // Drop each brand's official logo file into /public/images/partners/ using these names.
 // Until a file exists, the brand name is shown as text instead.
 const PARTNERS = [
-  { name: "CLO3D", href: "https://www.clo3d.com", logo: "/images/partners/clo3d.svg" },
-  { name: "Shopify", href: "https://www.shopify.com", logo: "/images/partners/shopify.svg" },
-  { name: "Pinterest", href: "https://www.pinterest.com", logo: "/images/partners/pinterest.svg" },
-  { name: "Unsplash", href: "https://unsplash.com", logo: "/images/partners/unsplash.svg" },
-  { name: "Style3D", href: "https://www.style3d.com", logo: "/images/partners/style3d.svg" },
+  { name: "CLO3D", href: "https://www.clo3d.com", logo: "/images/partners/clo3d.png" },
+  { name: "Shopify", href: "https://www.shopify.com", logo: "/images/partners/shopify.png" },
+  { name: "Pinterest", href: "https://www.pinterest.com", logo: "/images/partners/pinterest.png" },
+  { name: "Unsplash", href: "https://unsplash.com", logo: "/images/partners/unsplash.png" },
+  { name: "Style3D", href: "https://www.style3d.com", logo: "/images/partners/style3d.png" },
 ];
 
 function PartnerLogo({ name, logo }: { name: string; logo: string }) {
