@@ -1,8 +1,10 @@
-Copy these into your project root, keeping the paths:
-  app/page.tsx                      (REPLACES existing)
-  app/shop/page.tsx                 (new - the catalog now lives here too)
-  components/home/Catalog.tsx       (new)
-  components/landing/Landing.tsx    (new - the landing page)
-Optional: in components/layout/Header.tsx add { href: "/shop", label: "Shop" } to navItems,
-and point footer "All Products" links to "/shop".
-Update the user count by editing USERS at the top of Landing.tsx.
+Copy into your project root, keeping paths (replace existing where they exist):
+  app/page.tsx                            (replaces)
+  app/loading.tsx                         (replaces - was the product-grid skeleton that flashed on refresh)
+  app/shop/page.tsx, app/shop/loading.tsx (new)
+  components/home/Catalog.tsx             (new)
+  components/landing/Landing.tsx          (new)
+  components/landing/FeaturedProducts.tsx (new - real product cards -> /product/[id])
+  components/layout/Header.tsx            (replaces - adds "Shop" nav link)
+  components/layout/Footer.tsx            (replaces - product links now go to /shop)
+Edit USERS at top of Landing.tsx to update the user count.

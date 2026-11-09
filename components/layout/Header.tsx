@@ -62,6 +62,7 @@ export default function Header() {
   // static pages next to it. Garment Tool sits right beside it since it's
   // the other interactive design tool.
   const navItems = [
+    { href: "/shop", label: "Shop" },
     { href: "/design-patterns", label: "Design Patterns" },
     { href: "/account/garment-tool", label: "Garment Tool" },
     { href: "/pricing", label: "Premium" },

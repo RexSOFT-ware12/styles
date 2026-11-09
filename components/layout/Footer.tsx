@@ -29,11 +29,11 @@ export default function Footer() {
     {
       title: "Shop",
       links: [
-        { href: "/", label: "All Products" },
+        { href: "/shop", label: "All Products" },
         { href: "/design-patterns", label: "Design Patterns" },
-        { href: "/?sort=newest", label: "New Arrivals" },
-        { href: "/", label: "Sale" },
-        { href: "/", label: "Featured" },
+        { href: "/shop?sort=newest", label: "New Arrivals" },
+        { href: "/shop", label: "Sale" },
+        { href: "/shop?featured=true", label: "Featured" },
       ],
     },
     {

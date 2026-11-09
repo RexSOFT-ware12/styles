@@ -76,7 +76,7 @@ const TRUST = [
   { icon: LifeBuoy, title: "Real support", text: "Help Center, contact form and a human at support@fabricnow.pro.", href: "/contact" },
 ];
 
-export default function Landing() {
+export default function Landing({ featured }: { featured?: React.ReactNode }) {
   return (
     <div className="bg-background text-foreground overflow-hidden">
       {/* HERO */}
@@ -131,6 +131,22 @@ export default function Landing() {
             </div>
           ))}
         </dl>
+      </section>
+
+      {/* FEATURED PRODUCTS */}
+      <section className="px-4 pb-10 lg:pb-16">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-sm font-medium uppercase tracking-widest text-primary">Fresh from the library</p>
+              <h2 className="mt-2 text-3xl font-semibold tracking-tight">Pick a file and start designing</h2>
+            </div>
+            <Link href="/shop" className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-primary hover:underline">
+              View all products <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+          {featured}
+        </div>
       </section>
 
       {/* HOW IT WORKS */}

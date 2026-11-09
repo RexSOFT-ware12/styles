@@ -1,5 +1,7 @@
 import Catalog from "@/components/home/Catalog";
+import FeaturedProducts, { FeaturedSkeleton } from "@/components/landing/FeaturedProducts";
 import Landing from "@/components/landing/Landing";
+import { Suspense } from "react";
 
 export const metadata = {
   title: "FabricNow — Trusted by 60,000+ designers | CLO3D Fabrics, Garments & Tools",
@@ -13,8 +15,15 @@ export default async function Home({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const sp = await searchParams;
-  // Existing header search / filter / pagination links point at "/?search=…",
-  // so any query string keeps showing the catalog. A bare "/" is the landing page.
   const hasQuery = Object.values(sp).some((v) => v !== undefined && v !== "");
-  return hasQuery ? <Catalog searchParams={sp} /> : <Landing />;
+  if (hasQuery) return <Catalog searchParams={sp} />;
+  return (
+    <Landing
+      featured={
+        <Suspense fallback={<FeaturedSkeleton />}>
+          <FeaturedProducts />
+        </Suspense>
+      }
+    />
+  );
 }
