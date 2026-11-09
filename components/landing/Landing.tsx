@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { BeforeAfter, ClothBackground, CommandK, FabricMarquee, FiboBubble, GlobalFx, SeamLine, SwapPlayground, TracerDemo, Turntable } from "./Effects";
 
 const USERS = 60000; // update this one number as you grow
 
@@ -107,8 +108,11 @@ function PartnerLogo({ name, logo }: { name: string; logo: string }) {
 export default function Landing({ featured }: { featured?: React.ReactNode }) {
   return (
     <div className="bg-background text-foreground overflow-hidden">
+      <GlobalFx />
+      <CommandK />
       {/* HERO */}
       <section className="relative isolate px-4 pt-20 pb-24 sm:pt-28 lg:pt-36 lg:pb-32">
+        <ClothBackground />
         <div aria-hidden className="absolute inset-0 -z-10">
           <div className="absolute left-1/2 top-[-10%] h-[520px] w-[820px] -translate-x-1/2 rounded-full bg-primary/25 blur-[120px]" />
           <div className="absolute right-[-10%] top-1/3 h-[320px] w-[320px] rounded-full bg-accent-foreground/10 blur-[100px]" />
@@ -135,14 +139,15 @@ export default function Landing({ featured }: { featured?: React.ReactNode }) {
             AI-assisted tools that cut the prep work. Download, open, design.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button size="lg" asChild className="h-12 px-8 text-base">
+            <span data-magnetic><Button size="lg" asChild className="h-12 px-8 text-base">
               <Link href="/shop">Browse the library <ArrowRight /></Link>
-            </Button>
+            </Button></span>
             <Button size="lg" variant="outline" asChild className="h-12 px-8 text-base">
               <Link href="/signup">Start your free 3-day trial</Link>
             </Button>
           </div>
           <p className="mt-4 text-xs text-muted-foreground">No shipping. Instant download. Cancel anytime.</p>
+          <FiboBubble />
         </div>
 
         {/* stat strip */}
@@ -159,6 +164,34 @@ export default function Landing({ featured }: { featured?: React.ReactNode }) {
             </div>
           ))}
         </dl>
+      </section>
+
+      <FabricMarquee />
+
+      {/* TRY IT */}
+      <section className="px-4 py-20 lg:py-28">
+        <div className="mx-auto max-w-6xl">
+          <h2 className="mb-10 text-center text-3xl font-semibold tracking-tight text-balance sm:text-4xl">Try the tools before you sign up</h2>
+          <div className="grid gap-6 lg:grid-cols-2"><TracerDemo /><Turntable /></div>
+        </div>
+      </section>
+
+      <section className="bg-muted/40 px-4 py-20 lg:py-28">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2">
+          <div>
+            <h2 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">From garment photo to traced parts</h2>
+            <p className="mt-3 max-w-md text-muted-foreground">Drag the handle. The Garment Tool removes the background, then traces each garment part for you.</p>
+            <Button asChild className="mt-6"><Link href="/account/garment-tool">Try the Garment Tool <ArrowRight /></Link></Button>
+          </div>
+          <BeforeAfter />
+        </div>
+      </section>
+
+      <section className="px-4 py-20 lg:py-28">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="mb-10 text-center text-3xl font-semibold tracking-tight text-balance sm:text-4xl">Same garment, any fabric</h2>
+          <SwapPlayground />
+        </div>
       </section>
 
       {/* FEATURED PRODUCTS */}
@@ -185,10 +218,11 @@ export default function Landing({ featured }: { featured?: React.ReactNode }) {
             <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Four steps. No friction.</h2>
           </div>
           <ol className="relative grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <div aria-hidden className="absolute left-0 right-0 top-9 hidden border-t-2 border-dashed border-primary/30 lg:block" />
+            <div aria-hidden className="absolute left-0 right-0 top-9 hidden border-t-2 border-dashed border-primary/20 lg:block" />
+            <SeamLine />
             {STEPS.map((s) => (
               <li key={s.n} className="relative">
-                <Link href={s.href} className="group block h-full rounded-2xl border bg-card p-6 transition hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl">
+                <Link data-glow href={s.href} className="group block h-full rounded-2xl border bg-card p-6 transition hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl">
                   <span className="relative z-10 mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-primary font-semibold text-primary-foreground ring-8 ring-background">{s.n}</span>
                   <h3 className="text-lg font-semibold">{s.title}</h3>
                   <p className="mt-2 text-sm text-muted-foreground">{s.text}</p>
@@ -212,7 +246,7 @@ export default function Landing({ featured }: { featured?: React.ReactNode }) {
           </div>
           <div className="grid gap-4 lg:grid-cols-3">
             {PRODUCTS.map(({ icon: Icon, title, text, href, tag, span }) => (
-              <Link key={title} href={href} {...(href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})} className={`group relative overflow-hidden rounded-2xl border bg-card p-7 transition hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl ${span}`}>
+              <Link data-glow key={title} href={href} {...(href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})} className={`group relative overflow-hidden rounded-2xl border bg-card p-7 transition hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl ${span}`}>
                 <div aria-hidden className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary/10 blur-2xl transition group-hover:bg-primary/25" />
                 <div className="relative">
                   <div className="mb-5 inline-flex rounded-xl bg-primary/10 p-3"><Icon className="h-6 w-6 text-primary" /></div>
@@ -240,7 +274,7 @@ export default function Landing({ featured }: { featured?: React.ReactNode }) {
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {TRUST.map(({ icon: Icon, title, text, href }) => (
-              <Link key={title} href={href} className="rounded-2xl border bg-card p-5 transition hover:border-primary/50 hover:shadow-lg">
+              <Link data-glow key={title} href={href} className="rounded-2xl border bg-card p-5 transition hover:border-primary/50 hover:shadow-lg">
                 <Icon className="mb-3 h-6 w-6 text-primary" />
                 <h3 className="font-semibold">{title}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{text}</p>

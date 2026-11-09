@@ -10,3 +10,7 @@ Copy into your project root, keeping paths (replace existing where they exist):
 Edit USERS at top of Landing.tsx to update the user count.
 
 Partners section: add logo files to public/images/partners/ (see PUT-LOGOS-HERE.txt).
+
+NEW: components/landing/Effects.tsx (copy alongside Landing.tsx). No new dependencies.
+SWAP points: FABRICS[].css -> real fabric image URLs; FiboBubble go() -> real Fibo endpoint;
+Turntable -> Pose Tool turntable; TracerDemo -> your real tracer; BeforeAfter -> real garment photos.
