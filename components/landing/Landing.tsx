@@ -6,8 +6,10 @@ import {
   ArrowRight,
   Code,
   Download,
+  LayoutDashboard,
   LifeBuoy,
   Lock,
+  Palette,
   PersonStanding,
   RotateCcw,
   Scissors,
@@ -65,7 +67,9 @@ const PRODUCTS = [
   { icon: Scissors, title: "Garment Tool", text: "Remove backgrounds and trace garment parts automatically.", href: "/account/garment-tool", tag: "Free 3-day trial", span: "" },
   { icon: PersonStanding, title: "Pose Tool", text: "Pose notes for CLO3D's Avatar Pose editor plus turnaround references.", href: "/account/pose-tool", tag: "Free 3-day trial", span: "" },
   { icon: Code, title: "API for developers", text: "Background removal and garment segmentation inside your own app.", href: "/developers", tag: "Self-serve plans", span: "" },
-  { icon: Wand2, title: "Premium", text: "Unlimited access to every tool. Cancel anytime.", href: "/pricing", tag: "Start free", span: "lg:col-span-3" },
+  { icon: LayoutDashboard, title: "FabricNow Workspace", text: "Open the FabricNow Workspace web app.", href: "https://workspace.fabricnow.pro", tag: "Web app", span: "" },
+  { icon: Palette, title: "FabricNow Studios", text: "Explore FabricNow Studios.", href: "https://studios.fabricnow.pro", tag: "Studios", span: "" },
+  { icon: Wand2, title: "Premium", text: "Unlimited access to every tool. Cancel anytime.", href: "/pricing", tag: "Start free", span: "" },
 ];
 
 const TRUST = [
@@ -75,6 +79,30 @@ const TRUST = [
   { icon: RotateCcw, title: "Fair returns", text: "A written returns policy, no hunting for it.", href: "/returns" },
   { icon: LifeBuoy, title: "Real support", text: "Help Center, contact form and a human at support@fabricnow.pro.", href: "/contact" },
 ];
+
+// Drop each brand's official logo file into /public/images/partners/ using these names.
+// Until a file exists, the brand name is shown as text instead.
+const PARTNERS = [
+  { name: "CLO3D", href: "https://www.clo3d.com", logo: "/images/partners/clo3d.svg" },
+  { name: "Shopify", href: "https://www.shopify.com", logo: "/images/partners/shopify.svg" },
+  { name: "Pinterest", href: "https://www.pinterest.com", logo: "/images/partners/pinterest.svg" },
+  { name: "Unsplash", href: "https://unsplash.com", logo: "/images/partners/unsplash.svg" },
+  { name: "Style3D", href: "https://www.style3d.com", logo: "/images/partners/style3d.svg" },
+];
+
+function PartnerLogo({ name, logo }: { name: string; logo: string }) {
+  const ref = useRef<HTMLImageElement>(null);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    const i = ref.current;
+    if (i && i.complete && i.naturalWidth === 0) setFailed(true); // missed pre-hydration error
+  }, []);
+  if (failed) return <span className="text-xl font-semibold tracking-tight">{name}</span>;
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img ref={ref} src={logo} alt={name} onError={() => setFailed(true)} className="h-8 w-auto max-w-[150px] object-contain" />
+  );
+}
 
 export default function Landing({ featured }: { featured?: React.ReactNode }) {
   return (
@@ -184,7 +212,7 @@ export default function Landing({ featured }: { featured?: React.ReactNode }) {
           </div>
           <div className="grid gap-4 lg:grid-cols-3">
             {PRODUCTS.map(({ icon: Icon, title, text, href, tag, span }) => (
-              <Link key={title} href={href} className={`group relative overflow-hidden rounded-2xl border bg-card p-7 transition hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl ${span}`}>
+              <Link key={title} href={href} {...(href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})} className={`group relative overflow-hidden rounded-2xl border bg-card p-7 transition hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl ${span}`}>
                 <div aria-hidden className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary/10 blur-2xl transition group-hover:bg-primary/25" />
                 <div className="relative">
                   <div className="mb-5 inline-flex rounded-xl bg-primary/10 p-3"><Icon className="h-6 w-6 text-primary" /></div>
@@ -224,6 +252,29 @@ export default function Landing({ featured }: { featured?: React.ReactNode }) {
             see us in the <Link href="/press" className="text-primary underline-offset-4 hover:underline">press page</Link>, or{" "}
             <Link href="/blog" className="text-primary underline-offset-4 hover:underline">follow the blog</Link>.
           </p>
+        </div>
+      </section>
+
+      {/* PARTNERS */}
+      <section id="partners" className="border-y bg-muted/30 px-4 py-14">
+        <div className="mx-auto max-w-6xl text-center">
+          <p className="text-sm font-medium uppercase tracking-widest text-primary">Works with</p>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">Built around the tools designers already use</h2>
+          <ul className="mt-10 grid grid-cols-2 items-center gap-6 sm:grid-cols-3 lg:grid-cols-5">
+            {PARTNERS.map((p) => (
+              <li key={p.name}>
+                <a
+                  href={p.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={p.name}
+                  className="flex h-20 items-center justify-center rounded-xl border bg-card px-4 opacity-70 grayscale transition hover:-translate-y-0.5 hover:opacity-100 hover:grayscale-0 hover:shadow-md dark:invert dark:hover:invert-0"
+                >
+                  <PartnerLogo name={p.name} logo={p.logo} />
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
