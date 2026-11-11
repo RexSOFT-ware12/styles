@@ -63,6 +63,7 @@ export default function Header() {
   // the other interactive design tool.
   const navItems = [
     { href: "/shop", label: "Shop" },
+    { href: "/stickers", label: "Stickers" },
     { href: "/design-patterns", label: "Design Patterns" },
     { href: "/account/garment-tool", label: "Garment Tool" },
     { href: "/pricing", label: "Premium" },

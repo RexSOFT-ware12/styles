@@ -31,6 +31,7 @@ export default function Footer() {
       links: [
         { href: "/shop", label: "All Products" },
         { href: "/design-patterns", label: "Design Patterns" },
+        { href: "/stickers", label: "Garment Stickers" },
         { href: "/shop?sort=newest", label: "New Arrivals" },
         { href: "/shop", label: "Sale" },
         { href: "/shop?featured=true", label: "Featured" },
