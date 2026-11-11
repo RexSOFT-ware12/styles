@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { createCheckoutSession } from "@/lib/orders";
+import { redirectToPaystackCheckout } from "@/lib/paystackHosted";
 import { CreditCard, Download, Lock, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -54,11 +55,11 @@ function CheckoutContent() {
     setSubmitting(true);
     setError(null);
     try {
-      await createCheckoutSession(
+      const checkout = await createCheckoutSession(
         token,
         cart.map((item) => ({ productId: item.id }))
       );
-      setSubmitting(false);
+      redirectToPaystackCheckout(checkout.authorization_url);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't start checkout");
       setSubmitting(false);
@@ -109,7 +110,7 @@ function CheckoutContent() {
 
           <Button size="lg" className="w-full" onClick={handleCheckout} disabled={submitting}>
             <CreditCard className="h-4 w-4 mr-2" />
-            {submitting ? "Opening secure checkout..." : `Pay $${total.toFixed(2)}`}
+            {submitting ? "Redirecting to Paystack..." : `Pay $${total.toFixed(2)}`}
           </Button>
 
           <div className="space-y-3 pt-4 border-t border-border">

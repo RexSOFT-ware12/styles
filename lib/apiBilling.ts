@@ -1,4 +1,4 @@
-import { openPaystackInline } from "@/lib/paystackInline";
+import { redirectToPaystackCheckout } from "@/lib/paystackHosted";
 
 // Client for the API-access tiers (developer/programmatic access via an
 // API key, separate product from the consumer Premium plan — see
@@ -61,7 +61,7 @@ export async function fetchApiStatus(token: string): Promise<ApiStatus> {
   return res.json();
 }
 
-/** Opens Paystack Inline for the selected API subscription. */
+/** Redirects to Paystack hosted checkout for the selected API subscription. */
 export async function startApiCheckout(token: string, tier: "starter" | "growth"): Promise<void> {
   const res = await fetch(`${API_BASE}/billing/api-checkout`, {
     method: "POST",
@@ -69,8 +69,8 @@ export async function startApiCheckout(token: string, tier: "starter" | "growth"
     body: JSON.stringify({ tier }),
   });
   if (!res.ok) throw new Error(await parseError(res));
-  const { access_code } = await res.json();
-  await openPaystackInline(access_code);
+  const { authorization_url } = await res.json();
+  redirectToPaystackCheckout(authorization_url);
 }
 
 /** Cancels API plan renewal; access remains active through the paid period. */

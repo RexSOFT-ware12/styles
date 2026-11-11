@@ -1,4 +1,4 @@
-import { openPaystackInline } from "@/lib/paystackInline";
+import { redirectToPaystackCheckout } from "@/lib/paystackHosted";
 
 // Freemium gating for the Garment Tool, Pose Tool, and SVG customization:
 // 3 free days from signup, then premium ($29.99/mo for new subscribers;
@@ -45,15 +45,15 @@ export async function fetchEntitlement(token: string): Promise<EntitlementStatus
   return res.json();
 }
 
-/** Initializes a GHS Paystack transaction and opens the secure inline checkout. */
+/** Initializes a GHS Paystack transaction and redirects to hosted checkout. */
 export async function startPremiumCheckout(token: string): Promise<void> {
   const res = await fetch(`${API_BASE}/billing/checkout`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error(await parseError(res));
-  const { access_code } = await res.json();
-  await openPaystackInline(access_code);
+  const { authorization_url } = await res.json();
+  redirectToPaystackCheckout(authorization_url);
 }
 
 /** Paystack has no hosted billing portal; cancellation is handled in FabricNow. */

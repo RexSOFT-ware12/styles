@@ -1,5 +1,3 @@
-import { openPaystackInline } from "@/lib/paystackInline";
-
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
 export interface OrderItem {
@@ -26,11 +24,11 @@ async function parseError(res: Response): Promise<string> {
   }
 }
 
-/** Initializes a GHS Paystack payment and opens secure inline checkout. */
+/** Creates a server-priced order and returns Paystack hosted checkout URL. */
 export async function createCheckoutSession(
   token: string,
   items: { productId: string | number }[]
-): Promise<{ access_code: string; orderId: string }> {
+): Promise<{ authorization_url: string; orderId: string; reference: string }> {
   const res = await fetch(`${API_BASE}/orders/checkout`, {
     method: "POST",
     headers: {
@@ -41,7 +39,7 @@ export async function createCheckoutSession(
   });
   if (!res.ok) throw new Error(await parseError(res));
   const checkout = await res.json();
-  await openPaystackInline(checkout.access_code);
+  if (!checkout.authorization_url) throw new Error("Paystack did not return a hosted checkout URL.");
   return checkout;
 }
 

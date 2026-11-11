@@ -1,12 +1,13 @@
-# FabricNow — Paystack Inline billing implementation
+# FabricNow — Paystack hosted checkout billing implementation
 
 ## What changed
 
-- FabricNow subscription and digital-product checkout now opens Paystack Inline (Popup V2) inside the app instead of sending customers to a generic hosted checkout page.
+- FabricNow subscription and digital-product checkout now opens Paystack-hosted checkout using the authorization_url returned by the backend. Card details are entered only on Paystack.
 - Both Styles and Workspace keep displaying catalogue prices in USD. The browser is not sent a GHS equivalent, GHS transaction amount, or GHS currency field.
 - The Ghana backend uses GHS for Paystack transactions and subscription plans. Subscription GHS amounts are fixed in the backend/Paystack plan; USD is the storefront display price.
 - The backend calculates one-time product-order conversions using `PAYSTACK_USD_GHS_RATE`. This rate is server-only.
 - Payment activation remains webhook-driven and verified against Paystack transaction status, amount, and currency.
+- Sticker and ordinary product orders, Premium subscriptions, and API Starter/Growth subscriptions all use the same hosted-checkout redirect. API credits are granted by the active API subscription allowance; this codebase has no separate one-time API-credit top-up endpoint.
 - The Stripe card-entry/saved-card UI was removed from Workspace. Paystack collects card details directly; FabricNow does not receive or store card numbers or CVCs. The backend may store Paystack's reusable authorization reference encrypted to support subscription renewals and authorized usage overages; this is not raw card data.
 - Cancellation uses FabricNow's backend endpoint and Paystack's subscription-disable API. There is no Stripe-style hosted billing portal.
 
