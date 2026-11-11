@@ -214,7 +214,7 @@ function StickerCard({ sticker, selected, onPreview }: { sticker: Sticker; selec
 
       <CardContent className="flex flex-1 flex-col gap-2 p-3">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="text-sm font-semibold leading-snug text-foreground">{sticker.name}</h3>
+          <h3 className="text-sm font-semibold leading-snug text-foreground"><Link href={`/stickers/${sticker.id}`} className="hover:underline">{sticker.name}</Link></h3>
           <span className="shrink-0 text-sm font-bold tabular-nums">${sticker.price.toFixed(2)}</span>
         </div>
         <p className="line-clamp-2 text-xs text-muted-foreground">{sticker.blurb}</p>
@@ -295,6 +295,9 @@ export default function StickerShop() {
               </Button>
               <Button asChild size="lg" variant="outline">
                 <a href="#packs">See packs</a>
+              </Button>
+              <Button asChild size="lg" variant="ghost">
+                <Link href="/custom-sticker">Create a custom sticker</Link>
               </Button>
             </div>
 
