@@ -14,7 +14,12 @@ import { Skeleton } from "../ui/skeleton";
 export default function Header() {
   const { cart } = useCart();
   const { wishlist } = useWishlist();
-  const { user, logout, loading: authLoading } = useAuth();
+  const { user, logout, loading: authContextLoading } = useAuth();
+  // Header can hydrate after the auth provider has already finished loading, so
+  // the first client render must still match the server's skeleton.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const authLoading = authContextLoading || !mounted;
   const cartCount = cart?.length || 0;
   const wishlistCount = wishlist?.length || 0;
   const [isMobileOpen, setIsMobileOpen] = useState(false);

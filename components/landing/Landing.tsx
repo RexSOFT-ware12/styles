@@ -1,5 +1,6 @@
 "use client";
 
+import Testimonials from "@/components/landing/Testimonials";
 import Faq from "@/components/landing/Faq";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -312,6 +313,8 @@ export default function Landing({ featured }: { featured?: React.ReactNode }) {
           </ul>
         </div>
       </section>
+
+      <Testimonials />
 
       <Faq />
 
