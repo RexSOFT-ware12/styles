@@ -126,14 +126,7 @@ export default function Footer() {
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <MapPin className="h-4 w-4 text-primary" />
-                  <a
-                    href="https://www.zillow.com/homedetails/3308-De-Reimer-Ave-Bronx-NY-10475/79723838_zpid/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-primary transition-colors"
-                  >
-                    3308 De Reimer Ave, Bronx, NY 10475
-                  </a>
+                  <span>3308 De Reimer Ave, Bronx, NY 10475</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <Phone className="h-4 w-4 text-primary" />
