@@ -15,6 +15,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
+import { SITE_URL } from "@/lib/site";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -23,6 +24,17 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  applicationName: "FabricNow",
+  openGraph: {
+    type: "website",
+    siteName: "FabricNow",
+    url: SITE_URL,
+    title: "FabricNow — CLO3D Fabric & Garment Files",
+    description:
+      "Studio-quality fabric assets and ready-to-use CLO3D garment files. Instant download, permanent access.",
+  },
+  twitter: { card: "summary_large_image" },
   title: "FabricNow — CLO3D Fabric & Garment Files",
   description:
     "Studio-quality fabric assets and ready-to-use CLO3D garment files. Download a .zprj project, drop it in, and start designing in minutes.",
@@ -48,7 +60,7 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{var t=localStorage.getItem('fabricnow_theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch(e){}",
+              "try{var t=localStorage.getItem('fabricnow_theme');if(t!=='light')document.documentElement.classList.add('dark')}catch(e){document.documentElement.classList.add('dark')}",
           }}
         />
       </head>
