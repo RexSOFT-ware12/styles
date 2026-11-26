@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import { changePassword, updateProfile } from "@/lib/auth";
 import { cancelPremiumSubscription, startPremiumCheckout } from "@/lib/billing";
+import ReferralCard from "@/components/account/ReferralCard";
 import { useEntitlement } from "@/lib/useEntitlement";
 import { CheckCircle2, Download, KeyRound, Loader2, Scissors, Sparkles, User } from "lucide-react";
 import Link from "next/link";
@@ -192,6 +193,8 @@ export default function AccountOverviewPage() {
       <Suspense fallback={null}>
         <PlanStatusCard />
       </Suspense>
+
+      <ReferralCard />
 
       <div className="grid sm:grid-cols-2 gap-4">
         <Link href="/account/purchases">

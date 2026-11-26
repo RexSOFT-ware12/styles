@@ -4,15 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/context/CartContext";
+import { useCartQuote } from "@/lib/useCartQuote";
+import { BundleBar, CouponBox } from "@/components/cart/CartPricing";
 import { CreditCard, Download, Heart, Shield } from "lucide-react";
 import Link from "next/link";
 
 export default function OrderSummary() {
   const { cart } = useCart();
 
-  const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-  const tax = subtotal * 0.08;
-  const total = subtotal + tax;
+  const { quote, subtotal: localSubtotal, code, applyCode } = useCartQuote();
+  const subtotal = quote?.subtotal ?? localSubtotal;
+  const total = quote?.total ?? localSubtotal;
   const itemCount = cart.length;
 
   return (
@@ -30,10 +32,18 @@ export default function OrderSummary() {
             <span className="font-medium">${subtotal.toFixed(2)}</span>
           </div>
 
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Tax</span>
-            <span className="font-medium">${tax.toFixed(2)}</span>
-          </div>
+          {quote && quote.volumeDiscount > 0 && (
+            <div className="flex justify-between text-sm text-green-700">
+              <span>Bundle discount ({quote.volumePercent}%)</span>
+              <span className="font-medium">−${quote.volumeDiscount.toFixed(2)}</span>
+            </div>
+          )}
+          {quote && quote.couponDiscount > 0 && (
+            <div className="flex justify-between text-sm text-green-700">
+              <span>Code {quote.couponCode}</span>
+              <span className="font-medium">−${quote.couponDiscount.toFixed(2)}</span>
+            </div>
+          )}
 
           <Separator />
 
@@ -44,6 +54,9 @@ export default function OrderSummary() {
             </span>
           </div>
         </div>
+
+        <BundleBar quote={quote} />
+        <CouponBox quote={quote} code={code} onApply={applyCode} />
 
         <div className="p-3 bg-accent/10 rounded-lg border border-accent/20">
           <div className="flex items-center gap-2 mb-2">

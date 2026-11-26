@@ -8,6 +8,7 @@ import {
   Phone,
 } from "lucide-react";
 import Image from "next/image";
+import { subscribeEmail } from "@/lib/store";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "../ui/button";
@@ -17,11 +18,25 @@ import { Separator } from "../ui/separator";
 export default function Footer() {
   const [email, setEmail] = useState("");
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
+  const [newsletterMsg, setNewsletterMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [newsletterBusy, setNewsletterBusy] = useState(false);
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      console.log("Newsletter subscription:", email);
+    if (!email || newsletterBusy) return;
+    setNewsletterBusy(true);
+    setNewsletterMsg(null);
+    try {
+      const r = await subscribeEmail(email, { source: "footer" });
+      setNewsletterMsg({
+        ok: true,
+        text: r.welcomeSent ? "You're in! Check your inbox for 10% off your first order." : "You're subscribed — thanks!",
+      });
       setEmail("");
+    } catch (err) {
+      setNewsletterMsg({ ok: false, text: err instanceof Error ? err.message : "Couldn't subscribe. Please try again." });
+    } finally {
+      setNewsletterBusy(false);
     }
   };
 
@@ -33,7 +48,8 @@ export default function Footer() {
         { href: "/design-patterns", label: "Design Patterns" },
         { href: "/stickers", label: "Garment Stickers" },
         { href: "/shop?sort=newest", label: "New Arrivals" },
-        { href: "/shop", label: "Sale" },
+        { href: "/shop?onSale=true", label: "Sale" },
+        { href: "/compare", label: "Compare" },
         { href: "/shop?featured=true", label: "Featured" },
       ],
     },
@@ -41,6 +57,8 @@ export default function Footer() {
       title: "Customer Care",
       links: [
         { href: "/contact", label: "Contact Us" },
+        { href: "/request-fabric", label: "Request a fabric" },
+        { href: "/share-experience", label: "Share your experience" },
         { href: "/help", label: "Help Center" },
         { href: "/licensing", label: "Download & Licensing" },
         { href: "/returns", label: "Returns & Exchanges" },
@@ -99,6 +117,12 @@ export default function Footer() {
                 <span className="sr-only">Subscribe</span>
               </Button>
             </form>
+            {newsletterMsg && (
+              <p role="status" className={`mt-3 text-sm ${newsletterMsg.ok ? "text-green-600" : "text-destructive"}`}>
+                {newsletterMsg.text}
+              </p>
+            )}
+            <p className="mt-3 text-xs text-muted-foreground">Join the list and get 10% off your first order.</p>
           </div>
         </div>
 
@@ -106,7 +130,7 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
             <div className="lg:col-span-2">
               <Link
-                className="flex items-center gap-2 text-2xl tracking-tight text-gray-900 hover:text-gray-700 transition-colors mb-4"
+                className="flex items-center gap-2 text-2xl tracking-tight text-foreground hover:text-foreground/80 transition-colors mb-4"
                 href="/"
                 aria-label="FabricNow Home"
               >

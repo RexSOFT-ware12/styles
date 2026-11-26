@@ -4,6 +4,9 @@ import Header from "@/components/layout/Header";
 import PremiumTrialBanner from "@/components/layout/PremiumTrialBanner";
 import SiteChat from "@/components/layout/SiteChat";
 import { AuthProvider } from "@/context/AuthContext";
+import { CompareProvider } from "@/context/CompareContext";
+import ReferralCapture from "@/components/layout/ReferralCapture";
+import CompareBar from "@/components/compare/CompareBar";
 import { CartProvider } from "@/context/CartContext";
 import { SiteChatProvider } from "@/context/SiteChatContext";
 import { WishlistProvider } from "@/context/WishlistContext";
@@ -39,13 +42,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{var t=localStorage.getItem('fabricnow_theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch(e){}",
+          }}
+        />
+      </head>
       <body
         className={`${inter.className}  antialiased flex flex-col min-h-screen`}
       >
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
+              <CompareProvider>
               <SiteChatProvider>
                 <Suspense fallback={null}>
                   <PremiumTrialBanner />
@@ -55,7 +67,12 @@ export default function RootLayout({
                 <Footer />
                 <SiteChat />
                 <CookieConsentBanner />
+                <CompareBar />
+                <Suspense fallback={null}>
+                  <ReferralCapture />
+                </Suspense>
               </SiteChatProvider>
+              </CompareProvider>
             </WishlistProvider>
           </CartProvider>
         </AuthProvider>

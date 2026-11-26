@@ -5,9 +5,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { cn, isSvgSrc } from "@/lib/utils";
-import { Bell, Check, Eye, Heart, ShoppingCart } from "lucide-react";
+import { Bell, Check, Eye, Heart, ShoppingCart, Scale } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import QuickView from "@/components/home/QuickView";
+import { MAX_COMPARE, useCompare } from "@/context/CompareContext";
 import { useEffect, useState } from "react";
 
 interface Product {
@@ -36,6 +38,16 @@ export default function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const isLiked = isInWishlist(product.id);
+  const { isComparing, toggle: toggleCompare } = useCompare();
+  const comparing = isComparing(product.id);
+  const [quickOpen, setQuickOpen] = useState(false);
+  const onSale = !!product.compareAtPrice && product.compareAtPrice > product.price;
+
+  const handleCompare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!toggleCompare(product.id)) alert(`You can compare up to ${MAX_COMPARE} products at a time.`);
+  };
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -90,14 +102,31 @@ export default function ProductCard({ product }: { product: Product }) {
           />
         </Button>
 
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={comparing ? "Remove from comparison" : "Add to comparison"}
+          aria-pressed={comparing}
+          title={comparing ? "Remove from comparison" : "Compare"}
+          className={cn(
+            "absolute top-11 right-2 z-10 h-8 w-8 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-all duration-200 bg-background/80 backdrop-blur-sm hover:bg-background",
+            comparing && "opacity-100 text-primary"
+          )}
+          onClick={handleCompare}
+        >
+          <Scale className="h-3.5 w-3.5" />
+        </Button>
+
         <Link href={`/product/${product.id}`} className="block relative">
-          <div className="absolute left-2 top-2 z-10 inline-flex items-center gap-1.5 rounded-full bg-destructive px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-destructive-foreground shadow-md">
-            <Bell
-              aria-hidden="true"
-              className="h-3.5 w-3.5 origin-top motion-safe:group-hover:animate-[bell-ring_0.7s_ease-in-out]"
-            />
-            On Sale
-          </div>
+          {onSale && (
+            <div className="absolute left-2 top-2 z-10 inline-flex items-center gap-1.5 rounded-full bg-destructive px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-destructive-foreground shadow-md">
+              <Bell
+                aria-hidden="true"
+                className="h-3.5 w-3.5 origin-top motion-safe:group-hover:animate-[bell-ring_0.7s_ease-in-out]"
+              />
+              On Sale
+            </div>
+          )}
           <div className="relative aspect-square overflow-hidden bg-muted">
             {!imageError ? (
               isSvgSrc(product.image) ? (
@@ -132,6 +161,11 @@ export default function ProductCard({ product }: { product: Product }) {
             <Button
               size="sm"
               className="bg-primary text-primary-foreground hover:bg-primary/90"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setQuickOpen(true);
+              }}
             >
               <Eye className="h-3.5 w-3.5 mr-1.5" />
               Quick View
@@ -207,6 +241,7 @@ export default function ProductCard({ product }: { product: Product }) {
           )}
         </Button>
       </CardContent>
+      {quickOpen && <QuickView product={product} onClose={() => setQuickOpen(false)} />}
     </Card>
   );
 }

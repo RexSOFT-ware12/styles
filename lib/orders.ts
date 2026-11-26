@@ -27,7 +27,8 @@ async function parseError(res: Response): Promise<string> {
 /** Creates a server-priced order and returns Paystack hosted checkout URL. */
 export async function createCheckoutSession(
   token: string,
-  items: { productId: string | number }[]
+  items: { productId: string | number }[],
+  couponCode?: string
 ): Promise<{ authorization_url: string; orderId: string; reference: string }> {
   const res = await fetch(`${API_BASE}/orders/checkout`, {
     method: "POST",
@@ -35,7 +36,7 @@ export async function createCheckoutSession(
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ items }),
+    body: JSON.stringify({ items, couponCode: couponCode || undefined }),
   });
   if (!res.ok) throw new Error(await parseError(res));
   const checkout = await res.json();

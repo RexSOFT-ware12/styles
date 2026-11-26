@@ -1,6 +1,5 @@
 "use client";
 
-import Testimonials from "@/components/landing/Testimonials";
 import Faq from "@/components/landing/Faq";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -107,7 +106,7 @@ function PartnerLogo({ name, logo }: { name: string; logo: string }) {
   );
 }
 
-export default function Landing({ featured }: { featured?: React.ReactNode }) {
+export default function Landing({ featured, rows, testimonials }: { featured?: React.ReactNode; rows?: React.ReactNode; testimonials?: React.ReactNode }) {
   return (
     <div className="bg-background text-foreground overflow-hidden">
       <GlobalFx />
@@ -212,6 +211,8 @@ export default function Landing({ featured }: { featured?: React.ReactNode }) {
         </div>
       </section>
 
+      {rows}
+
       {/* HOW IT WORKS */}
       <section className="px-4 py-20 lg:py-28">
         <div className="mx-auto max-w-6xl">
@@ -314,7 +315,7 @@ export default function Landing({ featured }: { featured?: React.ReactNode }) {
         </div>
       </section>
 
-      <Testimonials />
+      {testimonials}
 
       <Faq />
 

@@ -67,6 +67,7 @@ export interface ProductFilters {
   minPrice?: number;
   maxPrice?: number;
   featured?: boolean;
+  onSale?: boolean;
   sort?: "price_asc" | "price_desc" | "newest" | "name_asc";
   page?: number;
   limit?: number;

@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
+import { CouponBox } from "@/components/cart/CartPricing";
+import { useCartQuote } from "@/lib/useCartQuote";
 import { createCheckoutSession } from "@/lib/orders";
 import { redirectToPaystackCheckout } from "@/lib/paystackHosted";
 import { CreditCard, Download, Lock, ShieldCheck } from "lucide-react";
@@ -21,8 +23,9 @@ function CheckoutContent() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-  const total = subtotal;
+  const { quote, subtotal: localSubtotal, code, applyCode, appliedCode } = useCartQuote();
+  const subtotal = quote?.subtotal ?? localSubtotal;
+  const total = quote?.total ?? localSubtotal;
   const itemCount = cart.length;
 
   if (!authLoading && !user) {
@@ -57,7 +60,8 @@ function CheckoutContent() {
     try {
       const checkout = await createCheckoutSession(
         token,
-        cart.map((item) => ({ productId: item.id }))
+        cart.map((item) => ({ productId: item.id })),
+        appliedCode || undefined
       );
       redirectToPaystackCheckout(checkout.authorization_url);
     } catch (err) {
@@ -98,6 +102,19 @@ function CheckoutContent() {
               <span className="text-muted-foreground">Subtotal ({itemCount} items)</span>
               <span className="font-medium">${subtotal.toFixed(2)}</span>
             </div>
+            {quote && quote.volumeDiscount > 0 && (
+              <div className="flex justify-between text-sm text-green-700">
+                <span>Bundle discount ({quote.volumePercent}%)</span>
+                <span className="font-medium">−${quote.volumeDiscount.toFixed(2)}</span>
+              </div>
+            )}
+            {quote && quote.couponDiscount > 0 && (
+              <div className="flex justify-between text-sm text-green-700">
+                <span>Code {quote.couponCode}</span>
+                <span className="font-medium">−${quote.couponDiscount.toFixed(2)}</span>
+              </div>
+            )}
+            <CouponBox quote={quote} code={code} onApply={applyCode} />
             <Separator />
 
             <div className="flex justify-between">

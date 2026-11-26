@@ -1,7 +1,6 @@
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Newspaper } from "lucide-react";
+import { posts } from "@/data/posts";
 import Link from "next/link";
 
 export const metadata = {
@@ -31,22 +30,21 @@ export default function Blog() {
 
       <section className="py-16 lg:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <Card className="max-w-2xl mx-auto bg-muted/30">
-            <CardContent className="p-12 text-center">
-              <Newspaper className="h-8 w-8 text-primary mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-foreground mb-3">
-                First post coming soon
-              </h2>
-              <p className="text-muted-foreground mb-8">
-                We&apos;re just getting the blog started. Subscribe to our
-                newsletter at the bottom of the page and we&apos;ll let you
-                know the moment something new goes up.
-              </p>
-              <Button asChild variant="outline">
-                <Link href="/">Browse Products</Link>
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-3">
+            {posts.map((post) => (
+              <Link key={post.slug} href={`/blog/${post.slug}`} className="group">
+                <Card className="h-full transition-colors group-hover:border-primary">
+                  <CardContent className="flex h-full flex-col p-6">
+                    <p className="mb-2 text-xs text-muted-foreground">
+                      {new Date(post.date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })} · {post.readMinutes} min read
+                    </p>
+                    <h2 className="mb-2 text-lg font-semibold text-foreground group-hover:text-primary">{post.title}</h2>
+                    <p className="text-sm text-muted-foreground">{post.description}</p>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
     </div>

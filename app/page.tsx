@@ -1,5 +1,7 @@
 import Catalog from "@/components/home/Catalog";
 import FeaturedProducts, { FeaturedSkeleton } from "@/components/landing/FeaturedProducts";
+import HomeRows from "@/components/landing/HomeRows";
+import Testimonials from "@/components/landing/Testimonials";
 import Landing from "@/components/landing/Landing";
 import { Suspense } from "react";
 
@@ -19,6 +21,16 @@ export default async function Home({
   if (hasQuery) return <Catalog searchParams={sp} />;
   return (
     <Landing
+      testimonials={
+        <Suspense fallback={null}>
+          <Testimonials />
+        </Suspense>
+      }
+      rows={
+        <Suspense fallback={null}>
+          <HomeRows />
+        </Suspense>
+      }
       featured={
         <Suspense fallback={<FeaturedSkeleton />}>
           <FeaturedProducts />

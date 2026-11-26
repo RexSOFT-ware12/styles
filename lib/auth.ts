@@ -24,12 +24,19 @@ async function parseError(res: Response): Promise<string> {
 }
 
 export async function signup(name: string, email: string, password: string): Promise<AuthResponse> {
+  let ref: string | undefined;
+  try {
+    ref = localStorage.getItem("fabricnow_ref") || undefined;
+  } catch {}
   const res = await fetch(`${API_BASE}/auth/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, email, password }),
+    body: JSON.stringify({ name, email, password, ref }),
   });
   if (!res.ok) throw new Error(await parseError(res));
+  try {
+    localStorage.removeItem("fabricnow_ref");
+  } catch {}
   return res.json();
 }
 

@@ -26,11 +26,13 @@ function parseFilters(
   const sortRaw = first(searchParams.sort);
   const pageRaw = first(searchParams.page);
   const featuredRaw = first(searchParams.featured);
+  const onSaleRaw = first(searchParams.onSale);
 
   const page = Math.max(1, Number(pageRaw) || 1);
   const minPrice = minPriceRaw !== undefined ? Number(minPriceRaw) : undefined;
   const maxPrice = maxPriceRaw !== undefined ? Number(maxPriceRaw) : undefined;
   const featured = featuredRaw === "true" || featuredRaw === "1" ? true : undefined;
+  const onSale = onSaleRaw === "true" || onSaleRaw === "1" ? true : undefined;
 
   const filters: ProductFilters = {
     ...(search ? { search } : {}),
@@ -41,6 +43,7 @@ function parseFilters(
     ...(minPrice !== undefined && !Number.isNaN(minPrice) ? { minPrice } : {}),
     ...(maxPrice !== undefined && !Number.isNaN(maxPrice) ? { maxPrice } : {}),
     ...(featured ? { featured } : {}),
+    ...(onSale ? { onSale } : {}),
     sort:
       sortRaw && SORT_VALUES.has(sortRaw)
         ? (sortRaw as ProductFilters["sort"])
@@ -66,7 +69,7 @@ export default async function ProductList({
 
   const { products, pagination, error } = result;
   const hasAnyFilter = Boolean(
-    filters.search || filters.category || filters.style || filters.fabric || filters.brand || filters.minPrice || filters.maxPrice || filters.featured
+    filters.search || filters.category || filters.style || filters.fabric || filters.brand || filters.minPrice || filters.maxPrice || filters.featured || filters.onSale
   );
 
   return (

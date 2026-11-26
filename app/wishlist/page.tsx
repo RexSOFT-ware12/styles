@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import WishlistAlerts from "@/components/account/WishlistAlerts";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { isSvgSrc } from "@/lib/utils";
@@ -57,6 +58,8 @@ export default function WishlistPage() {
           </Link>
         </Button>
       </div>
+
+      <WishlistAlerts />
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
         {wishlist.map((item) => (
