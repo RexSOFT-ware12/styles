@@ -1,5 +1,6 @@
 "use client";
 
+import RecentlyViewed from "@/components/product/RecentlyViewed";
 import CartItemList from "@/components/cart/CartItemList";
 import EmptyCart from "@/components/cart/EmptyCart";
 import OrderSummary from "@/components/cart/OrderSummary";
@@ -50,6 +51,8 @@ export default function Cart() {
       </div>
 
       <Recommendations />
+
+      <RecentlyViewed title="Pick up where you left off" />
     </div>
   );
 }

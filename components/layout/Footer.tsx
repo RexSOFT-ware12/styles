@@ -178,8 +178,7 @@ export default function Footer() {
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <span>© 2026 FabricNow™. Made with</span>
               <Heart className="h-4 w-4 text-red-500 fill-current" />
-              <span>All Rights Reserved.</span>
-              <br />
+              <span>for 3D fashion designers. All rights reserved.</span>
             </div>
           </div>
 
