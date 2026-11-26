@@ -62,5 +62,29 @@ export default async function ProductPage({ params }: PageProps) {
   if (error) return <ProductLoadError />;
   if (!product) return <ProductNotFound />;
 
-  return <ProductDetailClient product={product} />;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    image: [product.image, ...(product.images ?? [])].filter(Boolean),
+    description: product.description,
+    sku: product.sku,
+    brand: { "@type": "Brand", name: product.brand || "FabricNow" },
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "USD",
+      price: product.price,
+      availability: product.hasDigitalFile ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+    },
+    ...(product.rating && product.reviewCount
+      ? { aggregateRating: { "@type": "AggregateRating", ratingValue: product.rating, reviewCount: product.reviewCount } }
+      : {}),
+  };
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+      <ProductDetailClient product={product} />
+    </>
+  );
 }

@@ -15,6 +15,7 @@ interface Product {
   image: string;
   name: string;
   price: number;
+  compareAtPrice?: number;
   category?: string;
   style?: string;
   fabric?: string;
@@ -163,6 +164,16 @@ export default function ProductCard({ product }: { product: Product }) {
 
         <span className="text-sm font-bold text-foreground block">
           ${product.price.toFixed(2)}
+          {product.compareAtPrice && product.compareAtPrice > product.price && (
+            <>
+              <span className="ml-2 text-xs font-normal text-muted-foreground line-through">
+                ${product.compareAtPrice.toFixed(2)}
+              </span>
+              <span className="ml-2 rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-700">
+                -{Math.round((1 - product.price / product.compareAtPrice) * 100)}%
+              </span>
+            </>
+          )}
         </span>
 
         <Button

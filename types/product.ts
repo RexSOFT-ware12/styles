@@ -13,6 +13,8 @@ export interface Product {
   id: number | string;
   name: string;
   price: number;
+  /** Optional original price — when higher than `price` the storefront shows a sale badge and strike-through. */
+  compareAtPrice?: number;
   /** Hero shot — the fabric made up / worn on an AI model (first of heroImages, for backward compat). */
   image: string;
   /** Full set of "on model" hero shots (1 or more) — auto-swipe together on the product page. */

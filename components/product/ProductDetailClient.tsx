@@ -24,7 +24,11 @@ import {
   Star,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import ProductSpecs from "@/components/product/ProductSpecs";
+import RecentlyViewed from "@/components/product/RecentlyViewed";
+import StickyBuyBar from "@/components/product/StickyBuyBar";
+import { trackRecent } from "@/lib/recentlyViewed";
 
 // No Pinterest mark in lucide-react, so it's drawn as a small inline SVG here.
 function PinterestIcon({ className }: { className?: string }) {
@@ -46,6 +50,9 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   const router = useRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
+  useEffect(() => {
+    trackRecent({ id: product.id, name: product.name, price: product.price, image: product.image });
+  }, [product.id, product.name, product.price, product.image]);
   const [shareState, setShareState] = useState<"idle" | "copied" | "failed">("idle");
 
   const handleAddToCart = async () => {
@@ -183,6 +190,14 @@ export default function ProductDetailClient({ product }: { product: Product }) {
             <span className="text-3xl font-bold text-foreground">
               ${product.price.toFixed(2)}
             </span>
+            {product.compareAtPrice && product.compareAtPrice > product.price && (
+              <>
+                <span className="text-lg text-muted-foreground line-through">${product.compareAtPrice.toFixed(2)}</span>
+                <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-sm font-semibold text-red-700">
+                  Save {Math.round((1 - product.price / product.compareAtPrice) * 100)}%
+                </span>
+              </>
+            )}
           </div>
 
           <ProductDescription description={product.description} />
@@ -207,7 +222,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
           <Separator />
 
           <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div id="buy-buttons" className="flex flex-col sm:flex-row gap-4">
               <Button
                 size="lg"
                 className={cn(
@@ -310,6 +325,8 @@ export default function ProductDetailClient({ product }: { product: Product }) {
         </div>
       </div>
 
+      <ProductSpecs product={product} />
+
       <Features />
 
       <ProductReviews
@@ -321,6 +338,19 @@ export default function ProductDetailClient({ product }: { product: Product }) {
       />
 
       <RelatedProducts product={product} />
+
+      <RecentlyViewed excludeId={product.id} />
+
+      <StickyBuyBar
+        name={product.name}
+        price={product.price}
+        compareAtPrice={product.compareAtPrice}
+        disabled={!product.hasDigitalFile}
+        adding={isAdding}
+        added={justAdded}
+        onAdd={handleAddToCart}
+        anchorId="buy-buttons"
+      />
 
       <FiboAssistant product={product} />
     </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import Faq from "@/components/landing/Faq";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -311,6 +312,8 @@ export default function Landing({ featured }: { featured?: React.ReactNode }) {
           </ul>
         </div>
       </section>
+
+      <Faq />
 
       {/* FINAL CTA */}
       <section className="px-4 pb-24">
