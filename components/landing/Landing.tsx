@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import Snowfall from "./Snowfall";
 import { BeforeAfter, ClothBackground, CommandK, FabricMarquee, FiboBubble, GlobalFx, SeamLine, SwapPlayground, TracerDemo, Turntable } from "./Effects";
 
 const USERS = 60000; // update this one number as you grow
@@ -110,6 +111,7 @@ export default function Landing({ featured, rows, testimonials }: { featured?: R
   return (
     <div className="bg-background text-foreground overflow-hidden">
       <GlobalFx />
+      <Snowfall />
       <CommandK />
       {/* HERO */}
       <section className="relative isolate px-4 pt-20 pb-24 sm:pt-28 lg:pt-36 lg:pb-32">

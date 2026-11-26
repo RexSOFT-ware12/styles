@@ -17,7 +17,8 @@ export default async function Home({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const sp = await searchParams;
-  const hasQuery = Object.values(sp).some((v) => v !== undefined && v !== "");
+  // ?season= is only a theme preview switch, not a catalog filter.
+  const hasQuery = Object.entries(sp).some(([k, v]) => k !== "season" && v !== undefined && v !== "");
   if (hasQuery) return <Catalog searchParams={sp} />;
   return (
     <Landing

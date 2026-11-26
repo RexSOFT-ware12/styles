@@ -2,6 +2,7 @@ import CookieConsentBanner from "@/components/layout/CookieConsentBanner";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import PremiumTrialBanner from "@/components/layout/PremiumTrialBanner";
+import SeasonalBanner from "@/components/layout/SeasonalBanner";
 import SiteChat from "@/components/layout/SiteChat";
 import { AuthProvider } from "@/context/AuthContext";
 import { CompareProvider } from "@/context/CompareContext";
@@ -60,6 +61,7 @@ export default function RootLayout({
               <CompareProvider>
               <SiteChatProvider>
                 <Suspense fallback={null}>
+                  <SeasonalBanner />
                   <PremiumTrialBanner />
                   <Header />
                 </Suspense>
