@@ -3,12 +3,14 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
-import { startApiCheckout } from "@/lib/apiBilling";
+import { fetchApiPlanSales, startApiCheckout, type ApiPlanSale } from "@/lib/apiBilling";
 import { useApiEntitlement } from "@/lib/useApiEntitlement";
 import { cn } from "@/lib/utils";
 import { Check, Code2, Loader2, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const usd = (n: number) => `$${n.toLocaleString("en-US", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 })}`;
 
 // Marketing copy for the three API tiers. Kept in sync BY HAND with
 // style-backend's src/lib/apiTiers.js, which is the actual pricing/quota
@@ -54,6 +56,10 @@ export default function ApiPricingPlans() {
 
   const [startingTier, setStartingTier] = useState<"starter" | "growth" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [sales, setSales] = useState<Record<string, ApiPlanSale>>({});
+  useEffect(() => {
+    fetchApiPlanSales().then(setSales);
+  }, []);
 
   const activeTier = status?.entitlement.hasAccess ? status.entitlement.tier : null;
 
@@ -111,10 +117,38 @@ export default function ApiPricingPlans() {
 
               <h2 className="text-lg font-semibold text-foreground mb-1">{tier.label}</h2>
               <p className="text-sm text-muted-foreground mb-5">{tier.blurb}</p>
-              <div className="mb-6">
-                <span className="text-4xl font-bold text-foreground">{tier.price}</span>
-                <span className="text-muted-foreground text-sm">{tier.period}</span>
-              </div>
+              {(() => {
+                const sale = tier.id === "enterprise" ? undefined : sales[tier.id];
+                if (!sale) {
+                  return (
+                    <div className="mb-6">
+                      <span className="text-4xl font-bold text-foreground">{tier.price}</span>
+                      <span className="text-muted-foreground text-sm">{tier.period}</span>
+                    </div>
+                  );
+                }
+                return (
+                  <div className="mb-6 rounded-xl border border-primary/30 bg-primary/5 p-4">
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span>Original price</span>
+                      <span>{usd(sale.originalUsd)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm text-muted-foreground mt-1">
+                      <span>Discount ({sale.percent}%)</span>
+                      <span className="text-emerald-600 font-medium">−{usd(sale.discountUsd)}</span>
+                    </div>
+                    <div className="mt-3 text-[11px] font-bold uppercase tracking-wider text-primary">{sale.label} price</div>
+                    <div>
+                      <span className="text-4xl font-bold text-foreground">{usd(sale.saleUsd)}</span>
+                      <span className="text-muted-foreground text-sm"> first month</span>
+                    </div>
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Then {usd(sale.originalUsd)}/mo. Card payment. Cancel anytime before renewal.
+                      {sale.endsAt ? ` Offer ends ${new Date(sale.endsAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}.` : ""}
+                    </p>
+                  </div>
+                );
+              })()}
 
               <ul className="space-y-3 mb-8">
                 {tier.features.map((f) => (
@@ -150,7 +184,7 @@ export default function ApiPricingPlans() {
                   title={activeTier ? "You already have an active API subscription — manage it from your account." : undefined}
                 >
                   {startingTier === tier.id && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Subscribe
+                  {sales[tier.id] ? `Subscribe, pay ${usd(sales[tier.id].saleUsd)} today` : "Subscribe"}
                 </Button>
               )}
             </div>

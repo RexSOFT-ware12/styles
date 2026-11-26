@@ -102,3 +102,25 @@ export async function revokeApiKey(token: string, keyId: string): Promise<void> 
   });
   if (!res.ok) throw new Error(await parseError(res));
 }
+
+
+export type ApiPlanSale = {
+  percent: number;
+  label: string;
+  endsAt: string | null;
+  originalUsd: number;
+  discountUsd: number;
+  saleUsd: number;
+};
+
+/** Live first-month sale per self-serve tier (empty when no sale is running). */
+export async function fetchApiPlanSales(): Promise<Record<string, ApiPlanSale>> {
+  try {
+    const res = await fetch(`${API_BASE}/billing/api-plans`);
+    if (!res.ok) return {};
+    const { plans } = (await res.json()) as { plans: { id: string; sale: ApiPlanSale | null }[] };
+    return Object.fromEntries(plans.filter((p) => p.sale).map((p) => [p.id, p.sale as ApiPlanSale]));
+  } catch {
+    return {};
+  }
+}
