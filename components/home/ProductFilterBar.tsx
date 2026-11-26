@@ -85,13 +85,13 @@ export default function ProductFilterBar({ meta }: { meta: ProductMeta }) {
 
   return (
     <div className="max-w-7xl mx-auto mb-6 flex flex-col gap-3">
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
         {meta.categories.length > 0 && (
           <Select
             value={category}
             onValueChange={(v) => updateParams({ category: v })}
           >
-            <SelectTrigger className="w-[140px]" aria-label="Filter by category">
+            <SelectTrigger className="w-full sm:w-[140px]" aria-label="Filter by category">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
@@ -107,7 +107,7 @@ export default function ProductFilterBar({ meta }: { meta: ProductMeta }) {
 
         {meta.styles.length > 0 && (
           <Select value={style} onValueChange={(v) => updateParams({ style: v })}>
-            <SelectTrigger className="w-[140px]" aria-label="Filter by style">
+            <SelectTrigger className="w-full sm:w-[140px]" aria-label="Filter by style">
               <SelectValue placeholder="Style" />
             </SelectTrigger>
             <SelectContent>
@@ -123,7 +123,7 @@ export default function ProductFilterBar({ meta }: { meta: ProductMeta }) {
 
         {meta.fabrics.length > 0 && (
           <Select value={fabric} onValueChange={(v) => updateParams({ fabric: v })}>
-            <SelectTrigger className="w-[140px]" aria-label="Filter by fabric">
+            <SelectTrigger className="w-full sm:w-[140px]" aria-label="Filter by fabric">
               <SelectValue placeholder="Fabric" />
             </SelectTrigger>
             <SelectContent>
@@ -139,7 +139,7 @@ export default function ProductFilterBar({ meta }: { meta: ProductMeta }) {
 
         {meta.brands.length > 0 && (
           <Select value={brand} onValueChange={(v) => updateParams({ brand: v })}>
-            <SelectTrigger className="w-[140px]" aria-label="Filter by brand">
+            <SelectTrigger className="w-full sm:w-[140px]" aria-label="Filter by brand">
               <SelectValue placeholder="Brand" />
             </SelectTrigger>
             <SelectContent>
@@ -153,7 +153,7 @@ export default function ProductFilterBar({ meta }: { meta: ProductMeta }) {
           </Select>
         )}
 
-        <div className="flex items-center gap-1.5">
+        <div className="col-span-2 sm:col-span-1 flex items-center gap-1.5">
           <Input
             type="number"
             inputMode="decimal"
@@ -162,7 +162,7 @@ export default function ProductFilterBar({ meta }: { meta: ProductMeta }) {
             onChange={(e) => setMinPrice(e.target.value)}
             onBlur={commitPriceRange}
             onKeyDown={(e) => e.key === "Enter" && commitPriceRange()}
-            className="w-24"
+            className="flex-1 sm:flex-none sm:w-24"
             aria-label="Minimum price"
           />
           <span className="text-muted-foreground text-sm">–</span>
@@ -174,13 +174,13 @@ export default function ProductFilterBar({ meta }: { meta: ProductMeta }) {
             onChange={(e) => setMaxPrice(e.target.value)}
             onBlur={commitPriceRange}
             onKeyDown={(e) => e.key === "Enter" && commitPriceRange()}
-            className="w-24"
+            className="flex-1 sm:flex-none sm:w-24"
             aria-label="Maximum price"
           />
         </div>
 
         <Select value={sort} onValueChange={(v) => updateParams({ sort: v })}>
-          <SelectTrigger className="w-[170px] ml-auto" aria-label="Sort products">
+          <SelectTrigger className="col-span-2 sm:col-span-1 w-full sm:w-[170px] sm:ml-auto" aria-label="Sort products">
             <SelectValue placeholder="Sort" />
           </SelectTrigger>
           <SelectContent>

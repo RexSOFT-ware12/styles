@@ -26,7 +26,7 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      className="p-2 rounded-full hover:bg-muted transition-colors"
+      className="p-1.5 sm:p-2 rounded-full hover:bg-muted transition-colors"
       aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
       title={dark ? "Light mode" : "Dark mode"}
     >

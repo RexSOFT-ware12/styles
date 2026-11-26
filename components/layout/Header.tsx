@@ -106,11 +106,11 @@ export default function Header() {
           : "bg-background/80 backdrop-blur-md border-b border-border shadow-sm"
       }`}
     >
-      <div className="container mx-auto px-4 sm:px-6 py-4">
+      <div className="container mx-auto px-3 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-8 lg:space-x-12">
+          <div className="flex items-center space-x-4 sm:space-x-8 lg:space-x-12 min-w-0">
             <Link
-              className="flex items-center gap-2 text-2xl tracking-tight text-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-2 text-base min-[360px]:text-xl sm:text-2xl tracking-tight shrink-0 text-foreground hover:text-foreground transition-colors"
               href="/"
               aria-label="FabricNow Home"
             >
@@ -161,7 +161,7 @@ export default function Header() {
             </form>
           </div>
 
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center space-x-0.5 sm:space-x-4 shrink-0">
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
               className="lg:hidden p-2 rounded-full hover:bg-muted transition-colors"
@@ -187,7 +187,7 @@ export default function Header() {
 
             <Link
               href="/wishlist"
-              className="relative p-2 rounded-full hover:bg-muted transition-all duration-200 group"
+              className="hidden sm:block relative p-2 rounded-full hover:bg-muted transition-all duration-200 group"
               aria-label={`Wishlist with ${wishlistCount} items`}
             >
               <Heart className="h-6 w-6 text-foreground/80 group-hover:text-foreground transition-colors" />
@@ -300,6 +300,13 @@ export default function Header() {
                   {label}
                 </Link>
               ))}
+              <Link
+                href="/wishlist"
+                onClick={closeMobileMenu}
+                className="sm:hidden text-sm font-medium py-2 px-3 rounded-lg transition-all text-foreground/80 hover:text-foreground hover:bg-muted"
+              >
+                Wishlist{wishlistCount > 0 ? ` (${wishlistCount})` : ""}
+              </Link>
             </div>
 
             <div className="flex flex-col space-y-3 pt-4 sm:hidden">

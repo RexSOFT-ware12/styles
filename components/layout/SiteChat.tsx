@@ -75,9 +75,9 @@ export default function SiteChat() {
   };
 
   return (
-    <div className="fixed bottom-6 left-6 z-50 flex flex-col items-start gap-3">
+    <div className="fixed bottom-3 left-3 sm:bottom-6 sm:left-6 z-50 flex flex-col items-start gap-3 max-w-[calc(100vw-1.5rem)]">
       {isOpen && (
-        <div className="flex h-[30rem] w-[22rem] sm:w-96 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
+        <div className="flex h-[min(30rem,calc(100dvh-6rem))] w-[calc(100vw-1.5rem)] max-w-sm sm:w-96 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
           {/* Header */}
           <div className="flex items-center justify-between gap-2 bg-primary px-4 py-3 text-primary-foreground">
             <div className="flex items-center gap-2">
@@ -153,10 +153,11 @@ export default function SiteChat() {
       {!isOpen && (
         <button
           onClick={openChat}
-          className="flex items-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-lg transition hover:bg-primary/90"
+          className="flex items-center justify-center gap-2 rounded-full bg-primary h-12 w-12 sm:h-auto sm:w-auto sm:px-4 sm:py-3 text-sm font-semibold text-primary-foreground shadow-lg transition hover:bg-primary/90"
         >
-          <MessageCircle className="h-4 w-4" />
-          Live Chat
+          <MessageCircle className="h-5 w-5 sm:h-4 sm:w-4" />
+          <span className="hidden sm:inline">Live Chat</span>
+          <span className="sr-only sm:hidden">Live Chat</span>
         </button>
       )}
     </div>
