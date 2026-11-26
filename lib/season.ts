@@ -1,4 +1,4 @@
-export type Season = "blackfriday" | "christmas" | null;
+export type Season = "blackfriday" | "christmas" | "holiday" | null;
 
 /**
  * Which seasonal theme is active. Date-driven so nothing has to be switched on

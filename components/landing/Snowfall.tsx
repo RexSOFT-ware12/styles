@@ -1,22 +1,19 @@
 "use client";
 
-import { getSeason } from "@/lib/season";
+import { useSeason } from "@/lib/useSeason";
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Gentle falling snow over the landing page during the Christmas season.
+ * Gentle falling snow over the landing page while the admin has snow switched on.
  * Canvas, pointer-events none (never blocks clicks), paused when the tab is
  * hidden, and skipped entirely for people who prefer reduced motion.
  */
 export default function Snowfall() {
   const ref = useRef<HTMLCanvasElement>(null);
-  const [on, setOn] = useState(false);
-
-  useEffect(() => {
-    const override = new URLSearchParams(window.location.search).get("season");
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setOn(getSeason(new Date(), override) === "christmas" && !reduce);
-  }, []);
+  const { snow } = useSeason();
+  const [reduce, setReduce] = useState(true);
+  useEffect(() => setReduce(window.matchMedia("(prefers-reduced-motion: reduce)").matches), []);
+  const on = snow && !reduce;
 
   useEffect(() => {
     if (!on) return;
