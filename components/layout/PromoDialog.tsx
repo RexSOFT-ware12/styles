@@ -180,7 +180,7 @@ export default function PromoDialog() {
 
   return (
     <div className="fixed inset-0 z-[80] flex items-end justify-center p-0 sm:items-center sm:p-4" role="presentation">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm motion-safe:animate-[promo-fade_0.25s_ease-out]" onClick={close} aria-hidden />
+      <div className="absolute inset-0 bg-black/20 motion-safe:animate-[promo-fade_0.25s_ease-out]" onClick={close} aria-hidden />
 
       <div
         role="dialog"
