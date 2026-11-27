@@ -2,7 +2,7 @@ import CookieConsentBanner from "@/components/layout/CookieConsentBanner";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import PremiumTrialBanner from "@/components/layout/PremiumTrialBanner";
-import SeasonalBanner from "@/components/layout/SeasonalBanner";
+import PromoDialog from "@/components/layout/PromoDialog";
 import SiteChat from "@/components/layout/SiteChat";
 import { AuthProvider } from "@/context/AuthContext";
 import { CompareProvider } from "@/context/CompareContext";
@@ -89,7 +89,6 @@ export default function RootLayout({
               <SiteChatProvider>
                 <Suspense fallback={null}>
                   <PinterestWelcome />
-                  <SeasonalBanner />
                   <PremiumTrialBanner />
                   <Header />
                 </Suspense>
@@ -97,6 +96,7 @@ export default function RootLayout({
                 <Footer />
                 <SiteChat />
                 <CookieConsentBanner />
+                <PromoDialog />
                 <CompareBar />
                 <Suspense fallback={null}>
                   <PinterestTagLoader />
