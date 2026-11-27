@@ -11,9 +11,19 @@ export type SeasonInfo = {
   message: string;
   code: string;
   snow: boolean;
+  /** ISO time the sale ends (admin's end date or the calendar window); null when open-ended. */
+  endsAt: string | null;
 };
 
-const OFF: SeasonInfo = { season: null, title: "", message: "", code: "", snow: false };
+/** End of the automatic calendar window, used when the backend can't say. */
+function calendarEnd(season: SeasonInfo["season"]): string | null {
+  const y = new Date().getFullYear();
+  if (season === "blackfriday") return new Date(y, 11, 1).toISOString();
+  if (season === "christmas") return new Date(y, 11, 27).toISOString();
+  return null;
+}
+
+const OFF: SeasonInfo = { season: null, title: "", message: "", code: "", snow: false, endsAt: null };
 let pending: Promise<SeasonInfo> | null = null;
 
 /** The admin's theme choice, fetched once per page load and shared. */
@@ -25,7 +35,7 @@ function load(): Promise<SeasonInfo> {
       // Backend unreachable: fall back to the calendar so the site still themes itself.
       .catch(() => {
         const s = getSeason();
-        return { ...OFF, season: s, snow: s === "christmas" };
+        return { ...OFF, season: s, snow: s === "christmas", endsAt: calendarEnd(s) };
       });
   }
   return pending;
@@ -40,7 +50,7 @@ export function useSeason(): SeasonInfo {
   useEffect(() => {
     const o = new URLSearchParams(window.location.search).get("season");
     if (o === "blackfriday" || o === "christmas" || o === "holiday") {
-      setInfo({ ...OFF, season: o, title: o === "holiday" ? "Public holiday" : "", snow: o === "christmas" });
+      setInfo({ ...OFF, season: o, title: o === "holiday" ? "Public holiday" : "", snow: o === "christmas", endsAt: calendarEnd(o) });
       return;
     }
     if (o === "off") return;
