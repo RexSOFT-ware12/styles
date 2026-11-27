@@ -11,6 +11,8 @@ import Link from "next/link";
 import QuickView from "@/components/home/QuickView";
 import { MAX_COMPARE, useCompare } from "@/context/CompareContext";
 import { useEffect, useState } from "react";
+import PinSaveButton from "@/components/pinterest/PinSaveButton";
+import { pinnableImage, productPinDescription } from "@/lib/pinterest";
 
 interface Product {
   id: number | string;
@@ -116,6 +118,16 @@ export default function ProductCard({ product }: { product: Product }) {
         >
           <Scale className="h-3.5 w-3.5" />
         </Button>
+
+        {!isSvgSrc(product.image) && !imageError && (
+          <PinSaveButton
+            variant="icon"
+            url={`/product/${product.id}`}
+            media={pinnableImage(product.image)}
+            description={productPinDescription(product)}
+            className="absolute top-20 right-2 z-10 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-200 hidden sm:inline-flex"
+          />
+        )}
 
         <Link href={`/product/${product.id}`} className="block relative">
           {onSale && (

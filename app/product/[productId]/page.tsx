@@ -4,6 +4,7 @@ import ProductNotFound from "@/components/product/ProductNotFound";
 import { merchantReturnPolicy, shippingDetails } from "@/lib/offerPolicies";
 import { getProductByIdWithStatus } from "@/lib/products";
 import { SITE_URL } from "@/lib/site";
+import { pinnableImage } from "@/lib/pinterest";
 import type { Metadata } from "next";
 import { cache } from "react";
 
@@ -39,14 +40,35 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     product.description?.slice(0, 160) ||
     `${product.name} — CLO3D-ready fabric asset on FabricNow.`;
 
+  const url = `${SITE_URL}/product/${productId}`;
+  const pinImage = pinnableImage(product.image, ...(product.heroImages ?? []), ...(product.images ?? []));
+  const onSale = !!product.compareAtPrice && product.compareAtPrice > product.price;
+
   return {
     title: `${product.name} — FabricNow`,
     description,
+    alternates: { canonical: url },
     openGraph: {
       title: product.name,
       description,
-      images: product.image ? [{ url: product.image }] : undefined,
+      url,
+      siteName: "FabricNow",
+      images: pinImage ? [{ url: pinImage, alt: product.name }] : undefined,
       type: "website",
+    },
+    // Product tags Pinterest reads for Rich Pins (price + stock shown on every pin),
+    // alongside the schema.org Product data rendered on the page.
+    other: {
+      "og:price:amount": product.price.toFixed(2),
+      "og:price:currency": "USD",
+      "product:price:amount": product.price.toFixed(2),
+      "product:price:currency": "USD",
+      ...(onSale ? { "product:original_price:amount": product.compareAtPrice!.toFixed(2), "product:original_price:currency": "USD" } : {}),
+      "og:availability": product.hasDigitalFile ? "instock" : "out of stock",
+      "product:availability": product.hasDigitalFile ? "instock" : "out of stock",
+      "product:brand": product.brand || "FabricNow",
+      ...(product.category ? { "product:category": product.category } : {}),
+      "pinterest-rich-pin": "true",
     },
     twitter: {
       card: "summary_large_image",

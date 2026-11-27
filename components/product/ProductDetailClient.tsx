@@ -29,20 +29,10 @@ import ProductSpecs from "@/components/product/ProductSpecs";
 import RecentlyViewed from "@/components/product/RecentlyViewed";
 import StickyBuyBar from "@/components/product/StickyBuyBar";
 import { trackRecent } from "@/lib/recentlyViewed";
-
-// No Pinterest mark in lucide-react, so it's drawn as a small inline SVG here.
-function PinterestIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      className={className}
-      aria-hidden="true"
-    >
-      <path d="M12 2C6.477 2 2 6.477 2 12c0 4.237 2.636 7.855 6.356 9.312-.088-.791-.167-2.005.035-2.869.182-.78 1.172-4.97 1.172-4.97s-.299-.6-.299-1.486c0-1.39.806-2.428 1.809-2.428.853 0 1.265.64 1.265 1.408 0 .858-.546 2.14-.828 3.33-.236.995.499 1.807 1.48 1.807 1.778 0 3.144-1.874 3.144-4.579 0-2.393-1.72-4.068-4.177-4.068-2.845 0-4.515 2.135-4.515 4.34 0 .859.331 1.781.744 2.281a.3.3 0 0 1 .069.288c-.076.315-.245.995-.278 1.134-.043.183-.144.222-.332.134-1.24-.577-2.016-2.389-2.016-3.845 0-3.13 2.274-6.006 6.556-6.006 3.443 0 6.12 2.454 6.12 5.734 0 3.421-2.157 6.174-5.152 6.174-1.006 0-1.951-.523-2.274-1.14l-.618 2.357c-.224.861-.828 1.94-1.233 2.598A10 10 0 1 0 12 2Z" />
-    </svg>
-  );
-}
+import PinterestIcon from "@/components/pinterest/PinterestIcon";
+import PinSaveButton from "@/components/pinterest/PinSaveButton";
+import { pinnableImage, productPinDescription } from "@/lib/pinterest";
+import { SITE_URL } from "@/lib/site";
 
 export default function ProductDetailClient({ product }: { product: Product }) {
   const { addToCart } = useCart();
@@ -123,6 +113,10 @@ export default function ProductDetailClient({ product }: { product: Product }) {
     }
   };
 
+  const pinPage = `${SITE_URL}/product/${product.id}`;
+  const pinDescription = productPinDescription(product);
+  const pinImage = pinnableImage(product.image, ...(product.heroImages ?? []), ...(product.images ?? []));
+
   const isLiked = isInWishlist(product.id);
   const displayRating = product.rating ?? null;
   const displayReviewCount = product.reviewCount ?? product.reviews?.length ?? 0;
@@ -138,6 +132,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
           heroImages={product.heroImages}
           fabricImage={product.fabricImage}
           images={product.images}
+          pin={{ url: pinPage, description: pinDescription, fallbackImage: pinImage }}
         />
 
         <div className="space-y-6">
@@ -265,7 +260,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
               </Button>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
               <Button
                 variant="ghost"
                 size="sm"
@@ -304,6 +299,8 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                   </>
                 )}
               </Button>
+
+              <PinSaveButton variant="inline" url={pinPage} media={pinImage} description={pinDescription} />
 
               {product.pinterestUrl && (
                 <a

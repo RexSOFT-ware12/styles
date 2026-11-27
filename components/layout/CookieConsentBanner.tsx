@@ -7,10 +7,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 /**
- * First-visit cookie banner. FabricNow only uses essential session/cart
- * storage today (see /cookies) — this doesn't gate any site functionality,
- * it just records the person's preference so we have it on hand if/when
- * anything non-essential (e.g. analytics) is ever added.
+ * First-visit cookie banner. Essential session/cart storage always runs.
+ * "Accept all" also allows the Pinterest Tag and embedded Pinterest boards
+ * (see components/pinterest); "Decline" keeps them off.
  */
 export default function CookieConsentBanner() {
   const [visible, setVisible] = useState(false);
@@ -36,7 +35,8 @@ export default function CookieConsentBanner() {
             </div>
             <p className="text-sm text-muted-foreground">
               We use essential cookies to keep you signed in and remember your
-              cart. See our{" "}
+              cart. If you accept, Pinterest may also set cookies so we can see
+              which pins lead to sales. See our{" "}
               <Link href="/cookies" className="text-primary hover:underline">
                 Cookie Policy
               </Link>{" "}

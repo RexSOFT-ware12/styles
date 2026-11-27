@@ -70,6 +70,7 @@ export default function Header() {
   // the other interactive design tool.
   const navItems = [
     { href: "/shop", label: "Shop" },
+    { href: "/inspiration", label: "Inspiration" },
     { href: "/stickers", label: "Stickers" },
     { href: "/design-patterns", label: "Design Patterns" },
     { href: "/account/garment-tool", label: "Garment Tool" },
@@ -135,7 +136,7 @@ export default function Header() {
                   href={href}
                   className={`relative py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isActivePath(href)
-                      ? "bg-orange-100 shadow-md"
+                      ? "bg-orange-100 text-orange-950 shadow-md"
                       : "text-foreground/80 hover:bg-muted hover:text-foreground"
                   }`}
                   aria-current={isActivePath(href) ? "page" : undefined}
@@ -292,7 +293,7 @@ export default function Header() {
                   onClick={closeMobileMenu}
                   className={`text-sm font-medium py-2 px-3 rounded-lg transition-all ${
                     isActivePath(href)
-                      ? "bg-orange-100"
+                      ? "bg-orange-100 text-orange-950"
                       : "text-foreground/80 hover:text-foreground hover:bg-muted"
                   }`}
                   aria-current={isActivePath(href) ? "page" : undefined}

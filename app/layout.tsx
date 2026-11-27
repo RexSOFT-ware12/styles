@@ -16,6 +16,9 @@ import { Inter } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 import { SITE_URL } from "@/lib/site";
+import { getPinterestSettings } from "@/lib/pinterest";
+import PinterestTag from "@/components/pinterest/PinterestTag";
+import PinterestWelcome from "@/components/pinterest/PinterestWelcome";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -23,7 +26,7 @@ const inter = Inter({
   display: "swap",
 });
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   applicationName: "FabricNow",
   openGraph: {
@@ -49,6 +52,18 @@ export const metadata: Metadata = {
   manifest: "/site.webmanifest",
 };
 
+// Adds Pinterest's domain-verification tag when a code is set (Admin → Pinterest
+// or NEXT_PUBLIC_PINTEREST_DOMAIN_VERIFY), which is what lets Pinterest claim the site.
+export async function generateMetadata(): Promise<Metadata> {
+  const { domainVerify } = await getPinterestSettings();
+  return domainVerify ? { ...baseMetadata, other: { "p:domain_verify": domainVerify } } : baseMetadata;
+}
+
+async function PinterestTagLoader() {
+  const { tagId } = await getPinterestSettings();
+  return tagId ? <PinterestTag tagId={tagId} /> : null;
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -73,6 +88,7 @@ export default function RootLayout({
               <CompareProvider>
               <SiteChatProvider>
                 <Suspense fallback={null}>
+                  <PinterestWelcome />
                   <SeasonalBanner />
                   <PremiumTrialBanner />
                   <Header />
@@ -82,6 +98,9 @@ export default function RootLayout({
                 <SiteChat />
                 <CookieConsentBanner />
                 <CompareBar />
+                <Suspense fallback={null}>
+                  <PinterestTagLoader />
+                </Suspense>
                 <Suspense fallback={null}>
                   <ReferralCapture />
                 </Suspense>

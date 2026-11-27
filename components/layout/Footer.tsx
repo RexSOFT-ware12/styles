@@ -14,6 +14,7 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
+import PinterestFollow from "@/components/pinterest/PinterestFollow";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
@@ -45,6 +46,7 @@ export default function Footer() {
       title: "Shop",
       links: [
         { href: "/shop", label: "All Products" },
+        { href: "/inspiration", label: "Inspiration" },
         { href: "/design-patterns", label: "Design Patterns" },
         { href: "/stickers", label: "Garment Stickers" },
         { href: "/shop?sort=newest", label: "New Arrivals" },
@@ -162,6 +164,8 @@ export default function Footer() {
                   <span>support@fabricnow.pro</span>
                 </div>
               </div>
+
+              <PinterestFollow className="mt-6" />
             </div>
 
             {footerSections.map((section, index) => (

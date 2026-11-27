@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { cn, isSvgSrc, makeSvgResponsive, recolorPatternSvg } from "@/lib/utils";
 import { Check, Palette } from "lucide-react";
 import Image from "next/image";
+import PinSaveButton from "@/components/pinterest/PinSaveButton";
+import { pinnableImage } from "@/lib/pinterest";
 import { useEffect, useMemo, useState } from "react";
 
 interface GalleryImage {
@@ -37,7 +39,10 @@ export default function ProductGallery({
   heroImages,
   fabricImage,
   images,
+  pin,
 }: {
+  /** When set, a Pinterest "Save" button shows on the main image. */
+  pin?: { url: string; description: string; fallbackImage: string };
   name: string;
   image: string;
   heroImages?: string[];
@@ -158,7 +163,7 @@ export default function ProductGallery({
     <div className="space-y-4">
       <div className="w-full max-w-[500px] mx-auto flex flex-col items-center px-4">
         <div
-          className="relative rounded-xl shadow-lg overflow-hidden mb-4 w-full aspect-square bg-muted"
+          className="group/gallery relative rounded-xl shadow-lg overflow-hidden mb-4 w-full aspect-square bg-muted"
           onMouseEnter={() => setHovering(true)}
           onMouseLeave={() => setHovering(false)}
           onTouchStart={handleTouchStart}
@@ -206,6 +211,12 @@ export default function ProductGallery({
             <Badge className="absolute top-3 left-3 bg-background/90 text-foreground border border-border shadow-sm">
               {displayed.label}
             </Badge>
+          )}
+          {pin && (
+            // Always visible on touch screens (no hover there); appears on hover with a mouse.
+            <div className="absolute top-3 right-3 z-10 transition-opacity duration-150 opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/gallery:opacity-100 focus-within:opacity-100">
+              <PinSaveButton url={pin.url} media={pinnableImage(displayed.src, pin.fallbackImage)} description={pin.description} />
+            </div>
           )}
           {isTouchTarget && isFilled(displayed.label) && (
             <Badge

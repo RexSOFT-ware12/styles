@@ -1,5 +1,6 @@
 "use client";
 
+import { trackPinterest } from "@/lib/pinterest";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface CartItem {
@@ -45,6 +46,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   // Each product is a unique digital download — no point "buying" the same
   // one twice, so adding it again while it's already in the cart is a no-op.
   const addToCart = (item: CartItem) => {
+    trackPinterest("addtocart", {
+      value: item.price,
+      currency: "USD",
+      order_quantity: 1,
+      line_items: [{ product_id: String(item.id), product_name: item.name, product_price: item.price, product_quantity: 1 }],
+    });
     setCart((prevCart) => {
       const alreadyInCart = prevCart.some((cartItem) => cartItem.id === item.id);
       if (alreadyInCart) return prevCart;

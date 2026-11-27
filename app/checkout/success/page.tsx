@@ -6,6 +6,7 @@ import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
+import { trackPinterest } from "@/lib/pinterest";
 
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
@@ -17,6 +18,20 @@ function CheckoutSuccessContent() {
   // server-side by the Paystack webhook, which is what actually unlocks the
   // download on the Purchases page.
   useEffect(() => {
+    // Tell the Pinterest Tag (if the visitor accepted cookies) about the sale,
+    // read from the saved cart before it's cleared.
+    try {
+      const items = JSON.parse(localStorage.getItem("cart") || "[]") as { id: string | number; name: string; price: number }[];
+      if (Array.isArray(items) && items.length) {
+        trackPinterest("checkout", {
+          value: Number(items.reduce((t, i) => t + (Number(i.price) || 0), 0).toFixed(2)),
+          currency: "USD",
+          order_quantity: items.length,
+          ...(orderId ? { order_id: orderId } : {}),
+          line_items: items.map((i) => ({ product_id: String(i.id), product_name: i.name, product_price: i.price, product_quantity: 1 })),
+        });
+      }
+    } catch { /* tracking must never block the page */ }
     clearCart();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

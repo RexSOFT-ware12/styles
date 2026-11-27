@@ -8,7 +8,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 export const revalidate = 3600;
 
 const STATIC = [
-  "", "/shop", "/stickers", "/design-patterns", "/pricing", "/developers", "/blog", "/about", "/contact",
+  "", "/shop", "/inspiration", "/stickers", "/design-patterns", "/pricing", "/developers", "/blog", "/about", "/contact",
   "/help", "/licensing", "/returns", "/press", "/careers", "/reviews", "/request-fabric", "/share-experience",
   "/privacy", "/terms", "/cookies", "/accessibility",
 ];

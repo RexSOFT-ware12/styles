@@ -33,6 +33,10 @@ function backendImagePatterns() {
 }
 
 const nextConfig: NextConfig = {
+  // Crawlers that need every <meta> tag in <head> before the page streams.
+  // Next's default list plus Pinterest (Rich Pins), Pinterest's catalog bot and Telegram.
+  htmlLimitedBots:
+    /[\w-]+-Google|Google-[\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight|Pinterest|TelegramBot/i,
   images: {
     // Design Pattern products are served as SVGs (auto-traced from the
     // admin's PNG upload — see style-backend/src/lib/svgConvert.js). Next's

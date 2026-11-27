@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function CookiePolicy() {
   return (
-    <LegalLayout eyebrow="Legal" title="Cookie Policy" updated="September 2026">
+    <LegalLayout eyebrow="Legal" title="Cookie Policy" updated="November 2026">
       <p>
         This page explains how FabricNow uses cookies and similar browser
         storage, and the choices you have.
@@ -28,9 +28,20 @@ export default function CookiePolicy() {
           later.
         </li>
       </ul>
+
+      <h2>Pinterest</h2>
       <p>
-        We don&apos;t currently use third-party advertising or tracking
-        cookies.
+        Only if you press &quot;Accept all&quot; on our cookie banner, we load
+        the Pinterest Tag. It lets Pinterest set cookies so we can measure
+        which pins bring visitors and sales (page visits, items added to the
+        cart and completed checkouts). Our Inspiration page can also show our
+        Pinterest boards, which are delivered by Pinterest and may set its own
+        cookies; if you haven&apos;t accepted, they only load when you press
+        &quot;Show boards&quot;. If you press &quot;Decline&quot;, none of this
+        loads. These cookies are governed by Pinterest&apos;s own privacy
+        policy. The &quot;Save&quot; buttons on our product pages simply open
+        Pinterest in a new window and don&apos;t load anything until you press
+        them.
       </p>
 
       <h2>Payment processing</h2>
