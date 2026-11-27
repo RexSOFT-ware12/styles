@@ -20,10 +20,12 @@ import {
   Sparkles,
   Users,
   Wand2,
+  Star,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Snowfall from "./Snowfall";
+import type { ReviewSummary } from "@/lib/store";
 import { BeforeAfter, ClothBackground, CommandK, FabricMarquee, FiboBubble, GlobalFx, SeamLine, SwapPlayground, TracerDemo, Turntable } from "./Effects";
 
 const USERS = 60000; // update this one number as you grow
@@ -107,7 +109,7 @@ function PartnerLogo({ name, logo }: { name: string; logo: string }) {
   );
 }
 
-export default function Landing({ featured, rows, testimonials }: { featured?: React.ReactNode; rows?: React.ReactNode; testimonials?: React.ReactNode }) {
+export default function Landing({ featured, rows, testimonials, reviewSummary }: { featured?: React.ReactNode; rows?: React.ReactNode; testimonials?: React.ReactNode; reviewSummary?: ReviewSummary }) {
   return (
     <div className="bg-background text-foreground overflow-hidden">
       <GlobalFx />
@@ -129,10 +131,21 @@ export default function Landing({ featured, rows, testimonials }: { featured?: R
         </div>
 
         <div className="mx-auto max-w-4xl text-center motion-safe:animate-[rise-in_0.6s_ease-out]">
-          <Badge variant="secondary" className="mb-6 gap-2 rounded-full border border-primary/30 bg-background/70 px-4 py-1.5 backdrop-blur">
-            <Users className="h-3.5 w-3.5 text-primary" />
-            Trusted by <strong className="font-semibold"><CountUp to={USERS} /></strong> designers
-          </Badge>
+          <Link href="/reviews" aria-label="Read customer reviews" className="mb-6 inline-block">
+            <Badge variant="secondary" className="gap-2 rounded-full border border-primary/30 bg-background/70 px-4 py-1.5 backdrop-blur transition-colors hover:border-primary/60">
+              <Users className="h-3.5 w-3.5 text-primary" />
+              Trusted by <strong className="font-semibold"><CountUp to={USERS} /></strong> designers
+              {reviewSummary?.average ? (
+                <span className="ml-1 inline-flex items-center gap-1 border-l border-border pl-3">
+                  <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                  <strong className="font-semibold">{reviewSummary.average.toFixed(1)}</strong>
+                  <span className="text-muted-foreground">({reviewSummary.count} review{reviewSummary.count === 1 ? "" : "s"})</span>
+                </span>
+              ) : (
+                <span className="ml-1 border-l border-border pl-3 text-muted-foreground">Read reviews</span>
+              )}
+            </Badge>
+          </Link>
           <h1 className="text-5xl font-semibold tracking-tighter text-balance sm:text-6xl lg:text-7xl lg:leading-[1.02]">
             From idea to 3D render{" "}
             <span className="bg-gradient-to-r from-primary to-amber-700 bg-clip-text text-transparent">in minutes.</span>

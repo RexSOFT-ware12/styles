@@ -46,6 +46,7 @@ export function sendTestimonial(data: { name: string; email: string; role?: stri
 
 export interface Testimonial {
   id: string;
+  createdAt?: string;
   name: string;
   role?: string;
   rating: number;
@@ -60,6 +61,35 @@ export async function getTestimonials(): Promise<Testimonial[]> {
     return (await res.json()).data ?? [];
   } catch {
     return [];
+  }
+}
+
+export interface ReviewSummary {
+  count: number;
+  average: number | null;
+  distribution: Record<1 | 2 | 3 | 4 | 5, number>;
+}
+
+const EMPTY_SUMMARY: ReviewSummary = { count: 0, average: null, distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } };
+
+/** Overall store rating from approved reviews only. */
+export async function getReviewSummary(): Promise<ReviewSummary> {
+  try {
+    const res = await fetch(`${API_BASE}/testimonials/summary`, { next: { revalidate: 300 } });
+    if (!res.ok) return EMPTY_SUMMARY;
+    return (await res.json()) as ReviewSummary;
+  } catch {
+    return EMPTY_SUMMARY;
+  }
+}
+
+export async function getReviewsPage(page: number, limit = 20): Promise<{ data: Testimonial[]; total: number; hasMore: boolean }> {
+  try {
+    const res = await fetch(`${API_BASE}/testimonials?page=${page}&limit=${limit}`, { next: { revalidate: 300 } });
+    if (!res.ok) return { data: [], total: 0, hasMore: false };
+    return await res.json();
+  } catch {
+    return { data: [], total: 0, hasMore: false };
   }
 }
 

@@ -58,7 +58,8 @@ export default function Footer() {
       links: [
         { href: "/contact", label: "Contact Us" },
         { href: "/request-fabric", label: "Request a fabric" },
-        { href: "/share-experience", label: "Share your experience" },
+        { href: "/reviews", label: "Customer reviews" },
+        { href: "/share-experience", label: "Write a review" },
         { href: "/help", label: "Help Center" },
         { href: "/licensing", label: "Download & Licensing" },
         { href: "/returns", label: "Returns & Exchanges" },

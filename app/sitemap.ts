@@ -9,7 +9,7 @@ export const revalidate = 3600;
 
 const STATIC = [
   "", "/shop", "/stickers", "/design-patterns", "/pricing", "/developers", "/blog", "/about", "/contact",
-  "/help", "/licensing", "/returns", "/press", "/careers", "/request-fabric", "/share-experience",
+  "/help", "/licensing", "/returns", "/press", "/careers", "/reviews", "/request-fabric", "/share-experience",
   "/privacy", "/terms", "/cookies", "/accessibility",
 ];
 

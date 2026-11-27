@@ -3,6 +3,7 @@ import FeaturedProducts, { FeaturedSkeleton } from "@/components/landing/Feature
 import HomeRows from "@/components/landing/HomeRows";
 import Testimonials from "@/components/landing/Testimonials";
 import Landing from "@/components/landing/Landing";
+import { getReviewSummary } from "@/lib/store";
 import { Suspense } from "react";
 
 export const metadata = {
@@ -20,8 +21,10 @@ export default async function Home({
   // ?season= is only a theme preview switch, not a catalog filter.
   const hasQuery = Object.entries(sp).some(([k, v]) => k !== "season" && v !== undefined && v !== "");
   if (hasQuery) return <Catalog searchParams={sp} />;
+  const reviewSummary = await getReviewSummary();
   return (
     <Landing
+      reviewSummary={reviewSummary}
       testimonials={
         <Suspense fallback={null}>
           <Testimonials />
