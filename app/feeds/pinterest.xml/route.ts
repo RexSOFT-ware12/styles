@@ -1,5 +1,6 @@
 import { absoluteUrl, productPinDescription } from "@/lib/pinterest";
 import { SITE_URL } from "@/lib/site";
+import { assetTypeInfo } from "@/lib/assetTypes";
 import type { Product } from "@/types/product";
 
 /**
@@ -48,7 +49,7 @@ function item(p: Product): string | null {
   const onSale = !!p.compareAtPrice && p.compareAtPrice > p.price;
   const price = (onSale ? p.compareAtPrice! : p.price).toFixed(2);
   const description = (p.description?.trim() || productPinDescription(p)).slice(0, 9900);
-  const type = [p.category, p.style].filter(Boolean).join(" > ");
+  const type = [p.assetType && p.assetType !== "garment" ? assetTypeInfo(p.assetType).label : null, p.category, p.style].filter(Boolean).join(" > ");
 
   return [
     "<item>",

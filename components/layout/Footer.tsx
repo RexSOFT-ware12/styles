@@ -47,6 +47,9 @@ export default function Footer() {
       links: [
         { href: "/shop", label: "All Products" },
         { href: "/inspiration", label: "Inspiration" },
+        { href: "/shop?type=fabric", label: "Fabric library" },
+        { href: "/shop?type=trim", label: "Trims & hardware" },
+        { href: "/shop?type=block", label: "Starter blocks" },
         { href: "/design-patterns", label: "Design Patterns" },
         { href: "/stickers", label: "Garment Stickers" },
         { href: "/shop?sort=newest", label: "New Arrivals" },

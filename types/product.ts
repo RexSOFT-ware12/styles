@@ -9,6 +9,25 @@ export interface ProductReview {
   createdAt?: string;
 }
 
+/** What kind of CLO3D file a product is. "addon" = tech pack or DXF sold with a garment. */
+export type AssetType = "garment" | "fabric" | "trim" | "pose" | "render" | "block" | "addon";
+
+export interface Colorway {
+  name: string;
+  hex: string;
+}
+
+/** A tech pack or DXF pattern offered on a garment's page. */
+export interface ProductAddOn {
+  id: string;
+  name: string;
+  price: number;
+  image?: string;
+  addOnKind: "techpack" | "dxf" | "";
+  description?: string;
+  hasDigitalFile: boolean;
+}
+
 export interface Product {
   id: number | string;
   name: string;
@@ -46,6 +65,15 @@ export interface Product {
   /** Average of `reviews[].rating`, rounded to 1 decimal. Null if no reviews. */
   rating?: number | null;
   reviewCount?: number;
+  assetType?: AssetType;
+  addOnKind?: "techpack" | "dxf" | "";
+  /** CLO-SET link for an in-browser 3D preview. */
+  closetUrl?: string;
+  /** Sizes the pattern is graded to. */
+  gradedSizes?: string[];
+  colorways?: Colorway[];
+  /** Only on the single-product response. */
+  addOns?: ProductAddOn[];
 }
 
 export interface ProductsResponse {
@@ -68,6 +96,7 @@ export interface ProductFilters {
   maxPrice?: number;
   featured?: boolean;
   onSale?: boolean;
+  type?: AssetType;
   sort?: "price_asc" | "price_desc" | "newest" | "name_asc";
   page?: number;
   limit?: number;

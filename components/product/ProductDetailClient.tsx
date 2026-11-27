@@ -33,9 +33,14 @@ import PinterestIcon from "@/components/pinterest/PinterestIcon";
 import PinSaveButton from "@/components/pinterest/PinSaveButton";
 import { pinnableImage, productPinDescription } from "@/lib/pinterest";
 import { SITE_URL } from "@/lib/site";
+import CloExtras from "@/components/product/CloExtras";
+import AddOnPicker from "@/components/product/AddOnPicker";
 
 export default function ProductDetailClient({ product }: { product: Product }) {
-  const { addToCart } = useCart();
+  const { addToCart, cart } = useCart();
+  const [addOnIds, setAddOnIds] = useState<string[]>([]);
+  const inCart = (id: string) => cart.some((c) => String(c.id) === id);
+  const toggleAddOn = (id: string) => setAddOnIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   const { toggleWishlist, isInWishlist } = useWishlist();
   const router = useRouter();
   const [isAdding, setIsAdding] = useState(false);
@@ -56,6 +61,13 @@ export default function ProductDetailClient({ product }: { product: Product }) {
       price: product.price,
       image: product.image,
     });
+    // Ticked tech pack / DXF add-ons go into the cart as their own lines.
+    for (const a of product.addOns ?? []) {
+      if (addOnIds.includes(a.id) && a.hasDigitalFile) {
+        addToCart({ id: a.id, name: `${a.name} — ${product.name}`, price: a.price, image: a.image || product.image });
+      }
+    }
+    setAddOnIds([]);
 
     setIsAdding(false);
     setJustAdded(true);
@@ -197,6 +209,8 @@ export default function ProductDetailClient({ product }: { product: Product }) {
 
           <ProductDescription description={product.description} />
 
+          <CloExtras product={product} />
+
           {product.hasDigitalFile && product.digitalFile && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 rounded-lg px-3 py-2 w-fit">
               <Download className="h-4 w-4 text-primary" />
@@ -215,6 +229,10 @@ export default function ProductDetailClient({ product }: { product: Product }) {
           )}
 
           <Separator />
+
+          {!!product.addOns?.length && product.hasDigitalFile && (
+            <AddOnPicker addOns={product.addOns} selected={addOnIds} inCart={inCart} onToggle={toggleAddOn} />
+          )}
 
           <div className="space-y-4">
             <div id="buy-buttons" className="flex flex-col sm:flex-row gap-4">
@@ -244,7 +262,9 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                 ) : (
                   <div className="flex items-center gap-2">
                     <ShoppingCart className="h-4 w-4" />
-                    Add to Cart
+                    {addOnIds.length
+                      ? `Add to Cart · $${(product.price + (product.addOns ?? []).filter((x) => addOnIds.includes(x.id)).reduce((t, x) => t + x.price, 0)).toFixed(2)}`
+                      : "Add to Cart"}
                   </div>
                 )}
               </Button>

@@ -1,6 +1,7 @@
 "use client";
 
 import Faq from "@/components/landing/Faq";
+import LibraryTypes from "@/components/landing/LibraryTypes";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -209,6 +210,8 @@ export default function Landing({ featured, rows, testimonials, reviewSummary }:
           <SwapPlayground />
         </div>
       </section>
+
+      <LibraryTypes />
 
       {/* FEATURED PRODUCTS */}
       <section className="px-4 pb-10 lg:pb-16">

@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import type { Product } from "@/types/product";
 import Link from "next/link";
+import { assetTypeInfo } from "@/lib/assetTypes";
 
 function formatSize(bytes?: number) {
   if (typeof bytes !== "number" || bytes <= 0) return null;
@@ -18,7 +19,11 @@ export default function ProductSpecs({ product }: { product: Product }) {
   ];
   const size = formatSize(file?.size);
   if (size) rows.push({ label: "Size", value: size });
-  rows.push({ label: "Works with", value: "CLO3D (opens as a ready-made project)" });
+  const type = assetTypeInfo(product.assetType);
+  if (product.assetType && product.assetType !== "garment" && product.assetType !== "addon") rows.push({ label: "Type", value: type.badge });
+  rows.push({ label: "Works with", value: type.worksWith });
+  if (product.gradedSizes?.length) rows.push({ label: "Sizes", value: `Graded: ${product.gradedSizes.join(", ")}` });
+  if (product.colorways?.length) rows.push({ label: "Colourways", value: product.colorways.map((c) => c.name).join(", ") });
   if (product.fabric) rows.push({ label: "Fabric", value: product.fabric });
   if (product.style) rows.push({ label: "Style", value: product.style });
   if (product.sku) rows.push({ label: "SKU", value: product.sku });

@@ -13,6 +13,7 @@ import { MAX_COMPARE, useCompare } from "@/context/CompareContext";
 import { useEffect, useState } from "react";
 import PinSaveButton from "@/components/pinterest/PinSaveButton";
 import { pinnableImage, productPinDescription } from "@/lib/pinterest";
+import { assetTypeInfo } from "@/lib/assetTypes";
 
 interface Product {
   id: number | string;
@@ -26,6 +27,9 @@ interface Product {
   /** Mirrors the product detail page: no downloadable file means it can't
    *  actually be checked out yet, so "Add to Cart" is disabled here too. */
   hasDigitalFile?: boolean;
+  assetType?: string;
+  gradedSizes?: string[];
+  colorways?: { name: string; hex: string }[];
 }
 
 export default function ProductCard({ product }: { product: Product }) {
@@ -193,8 +197,13 @@ export default function ProductCard({ product }: { product: Product }) {
           </h2>
         </Link>
 
-        {(product.style || product.fabric) && (
+        {(product.style || product.fabric || (product.assetType && product.assetType !== "garment")) && (
           <div className="flex flex-wrap items-center gap-1 min-h-0">
+            {product.assetType && product.assetType !== "garment" && product.assetType !== "addon" && (
+              <span className="inline-flex items-center rounded-full border border-primary/30 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                {assetTypeInfo(product.assetType).badge}
+              </span>
+            )}
             {product.style && (
               <span className="inline-flex items-center rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary truncate max-w-full">
                 {product.style}
@@ -203,6 +212,28 @@ export default function ProductCard({ product }: { product: Product }) {
             {product.fabric && (
               <span className="hidden sm:inline-flex items-center rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground truncate max-w-full">
                 {product.fabric}
+              </span>
+            )}
+          </div>
+        )}
+
+        {(!!product.colorways?.length || !!product.gradedSizes?.length) && (
+          <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+            {!!product.colorways?.length && (
+              <span className="inline-flex items-center gap-1" title={product.colorways.map((c) => c.name).join(", ")}>
+                <span className="flex -space-x-1">
+                  {product.colorways.slice(0, 4).map((c) => (
+                    <span key={c.name} className="h-3 w-3 rounded-full border border-background" style={{ backgroundColor: c.hex || "#9ca3af" }} />
+                  ))}
+                </span>
+                {product.colorways.length} colourway{product.colorways.length === 1 ? "" : "s"}
+              </span>
+            )}
+            {!!product.gradedSizes?.length && (
+              <span className="truncate">
+                {product.gradedSizes.length > 1
+                  ? `${product.gradedSizes[0]}–${product.gradedSizes[product.gradedSizes.length - 1]}`
+                  : product.gradedSizes[0]}
               </span>
             )}
           </div>

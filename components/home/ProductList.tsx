@@ -1,5 +1,6 @@
 import { getProductMeta, getProductsWithStatus } from "@/lib/products";
 import type { ProductFilters } from "@/types/product";
+import { isAssetType } from "@/lib/assetTypes";
 import ProductCard from "./ProductCard";
 import ProductFilterBar from "./ProductFilterBar";
 import ProductPagination from "./ProductPagination";
@@ -27,6 +28,7 @@ function parseFilters(
   const pageRaw = first(searchParams.page);
   const featuredRaw = first(searchParams.featured);
   const onSaleRaw = first(searchParams.onSale);
+  const typeRaw = first(searchParams.type);
 
   const page = Math.max(1, Number(pageRaw) || 1);
   const minPrice = minPriceRaw !== undefined ? Number(minPriceRaw) : undefined;
@@ -44,6 +46,7 @@ function parseFilters(
     ...(maxPrice !== undefined && !Number.isNaN(maxPrice) ? { maxPrice } : {}),
     ...(featured ? { featured } : {}),
     ...(onSale ? { onSale } : {}),
+    ...(isAssetType(typeRaw) ? { type: typeRaw } : {}),
     sort:
       sortRaw && SORT_VALUES.has(sortRaw)
         ? (sortRaw as ProductFilters["sort"])
