@@ -1,7 +1,9 @@
 import ProductDetailClient from "@/components/product/ProductDetailClient";
 import ProductLoadError from "@/components/product/ProductLoadError";
 import ProductNotFound from "@/components/product/ProductNotFound";
+import { merchantReturnPolicy, shippingDetails } from "@/lib/offerPolicies";
 import { getProductByIdWithStatus } from "@/lib/products";
+import { SITE_URL } from "@/lib/site";
 import type { Metadata } from "next";
 import { cache } from "react";
 
@@ -74,6 +76,10 @@ export default async function ProductPage({ params }: PageProps) {
       "@type": "Offer",
       priceCurrency: "USD",
       price: product.price,
+      url: `${SITE_URL}/product/${productId}`,
+      itemCondition: "https://schema.org/NewCondition",
+      shippingDetails,
+      hasMerchantReturnPolicy: merchantReturnPolicy,
       availability: product.hasDigitalFile ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
     },
     ...(product.rating && product.reviewCount
