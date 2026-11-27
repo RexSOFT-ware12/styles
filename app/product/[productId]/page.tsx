@@ -85,6 +85,18 @@ export default async function ProductPage({ params }: PageProps) {
     ...(product.rating && product.reviewCount
       ? { aggregateRating: { "@type": "AggregateRating", ratingValue: product.rating, reviewCount: product.reviewCount } }
       : {}),
+    // Real, approved customer reviews only (the API never returns anything else).
+    ...(product.reviews?.length
+      ? {
+          review: product.reviews.slice(0, 5).map((r) => ({
+            "@type": "Review",
+            author: { "@type": "Person", name: r.reviewerName },
+            reviewRating: { "@type": "Rating", ratingValue: r.rating, bestRating: 5, worstRating: 1 },
+            reviewBody: r.comment,
+            ...(r.createdAt ? { datePublished: r.createdAt.slice(0, 10) } : {}),
+          })),
+        }
+      : {}),
   };
 
   return (

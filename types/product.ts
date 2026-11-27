@@ -2,7 +2,7 @@ export interface ProductReview {
   _id?: string;
   userId?: string;
   reviewerName: string;
-  /** 1–5, generated reviews are always kept within 4.0–4.9. */
+  /** Whole number, 1–5. */
   rating: number;
   comment: string;
   verifiedPurchase?: boolean;
@@ -41,7 +41,7 @@ export interface Product {
   /** Whether a downloadable digital bundle (.zip with the .zprj + assets) is attached. */
   hasDigitalFile?: boolean;
   digitalFile?: { originalName: string; size: number } | null;
-  /** Auto-generated customer reviews (4.0–4.9 stars), newest first. */
+  /** Approved customer reviews from verified buyers, newest first. */
   reviews?: ProductReview[];
   /** Average of `reviews[].rating`, rounded to 1 decimal. Null if no reviews. */
   rating?: number | null;

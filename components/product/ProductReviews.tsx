@@ -92,12 +92,12 @@ export default function ProductReviews({
 
     setSubmitting(true);
     try {
-      const review = await submitProductReview(productId, token, { rating: selectedRating, comment: comment.trim() });
-      setLocalReviews((current) => [review, ...current]);
+      await submitProductReview(productId, token, { rating: selectedRating, comment: comment.trim() });
+      // New reviews are held for approval, so nothing is added to the list yet.
       setSelectedRating(0);
       setComment("");
       setShowForm(false);
-      setMessage({ type: "success", text: "Thanks! Your verified-purchase review has been added." });
+      setMessage({ type: "success", text: "Thanks! Your review was received and will appear here once it has been approved." });
     } catch (err) {
       setMessage({ type: "error", text: err instanceof Error ? err.message : "Could not submit your review." });
     } finally {
